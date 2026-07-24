@@ -1,10 +1,10 @@
+#pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-class img_t {
+class img_t
+{
     private:
-        // Image properties. Area may be unused.
-        SDL_Rect area;
         SDL_Surface *data;
         SDL_Texture *texture;
 
@@ -15,11 +15,7 @@ class img_t {
 
     public:
         // Getter zone
-        SDL_Rect getArea()
-        { return area; }
-
-        SDL_Rect *getAreaPtr()
-        { return &area; }
+        SDL_Rect getArea();
 
         SDL_Surface *getData()
         { return data; }
@@ -30,12 +26,6 @@ class img_t {
         // Setter zone
         void setData(SDL_Surface *src)
         { data = src; }
-
-        void setPosition(int x, int y)
-        { area.x = x; area.y = y; }
-
-        void setDimensions(int w, int h)
-        { area.w = w; area.h = h; }
 
         // Autres choses
         void createTextureFromSurface(SDL_Renderer *renderer)

@@ -12,8 +12,8 @@
 #include "screen.h"
 #include "input.h"
 
-#include "img.h"
-#include "sprite.h"
+// #include "img.h"
+// #include "sprite.h"
 
 game_t game;
 
@@ -92,13 +92,12 @@ int main()
         {
             while(SDL_PollEvent(&game.event))
             {
-                if (game.event.type == SDL_QUIT)
-                    exit(0);
+                if (game.event.type == SDL_QUIT) exit(0);
             }
 
             // Calculate delta time
-            current = SDL_GetPerformanceCounter();
             // Delta time is the temporal difference between the current and the previous frame.
+            current = SDL_GetPerformanceCounter();
             delta = (float)(current - previous) / (float)freq;
             if (delta > 0.05f) delta = 0.05f; // Prevents spiral of death
             previous = current;
@@ -120,6 +119,7 @@ int main()
             if (keys[SDL_SCANCODE_RIGHT] && !keys[SDL_SCANCODE_LEFT]) dir[0] = 1;
             else if (!keys[SDL_SCANCODE_RIGHT] && keys[SDL_SCANCODE_LEFT]) dir[0] = -1;
 
+            // if the pressed key doesn't match the direction, then change the direction.
             if (keys[SDL_SCANCODE_RIGHT] && !keys[SDL_SCANCODE_LEFT] && dir[0] == -1) dir[0] = 1;
             if (!keys[SDL_SCANCODE_RIGHT] && keys[SDL_SCANCODE_LEFT] && dir[0] == 1) dir[0] = -1;
 
