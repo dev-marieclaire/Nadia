@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "defs.h"
+#include "init/init_windefaults.h"
 
 // Initializes a renderer with some default values and performs a checking
 SDL_Renderer *init_renderer(SDL_Window *win)

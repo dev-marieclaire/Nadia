@@ -23,6 +23,16 @@ class img_t
         SDL_Texture *getTexture()
         { return texture; }
 
+        bool setOpacity(float alpha)
+        {
+            if (SDL_SetTextureAlphaMod(texture, alpha)
+                && alpha <= 255 && alpha >= 0)
+                return true;
+            
+            printf("Error in applying opacity: ", SDL_GetError());
+            return false;
+        }
+
         // Setter zone
         void setData(SDL_Surface *src)
         { data = src; }
