@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include "img.h"
+#include "img_t.h"
 
 class sprite_t
 {
@@ -12,6 +12,7 @@ class sprite_t
         img_t *atlas;
 
         int x, y;
+        int w, h;
 
         float scale;
         int base_w, base_h;
@@ -32,7 +33,7 @@ class sprite_t
         
         SDL_Rect getClipFrame()
         { return clip; }
-        
+
         img_t *getAtlas()
         { return atlas; }
 
@@ -53,7 +54,9 @@ class sprite_t
         void setClipPosition(int x, int y);
 
         void render(SDL_Renderer *dest)
-        { SDL_RenderCopy(dest, atlas->getTexture(), &clip, &frame); }
+        { SDL_RenderCopy(dest, atlas->texture, &clip, &frame); }
+
+        sprite_t();
     
         sprite_t(img_t *img, int w_px, int h_px);
 };

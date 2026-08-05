@@ -5,7 +5,7 @@ BUILD = ./build
 OUT = $(BUILD)/sprite
 LFLAGS = `pkg-config --cflags --libs sdl2 SDL2_image`
 
-all: compile exec
+all: compile
 
 clean:
 	rm -fr ./{build,src}/*.o
@@ -16,5 +16,5 @@ compile:
 
 	g++ $(SRC) $(INCLUDE) -g -o $(OUT) $(LFLAGS)
 
-exec:
+run:
 	cd ./build && SDL_VIDEODRIVER=x11 ./sprite

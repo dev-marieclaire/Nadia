@@ -3,49 +3,57 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
-#include <time.h>
+#include <stdlib.h>
+#include <stdint.h>
+// #include <time.h>
 
 #include "init.h"
 
 #include "screen.h"
 #include "input.h"
 
-#include "img.h"
+#include "strings.h"
+#include "img_t.h"
 #include "sprite.h"
 
 int main()
 {
     game_t game;
-    memset(&game, 0, sizeof(game)); // Prevents accidental flags by setting every value to 0.
+    img_t *img;
 
-    const char *title = "SPRITE: PROOF OF CONCEPT";
-    size_t len = strlen(title);
+    mouse_t mouse;
+    keyboard_t clavier; // Clavier is keyboard in French, it looks and sounds cooler imo.
 
-    game.title = (char*) malloc(len + 1);
-    if (game.title == NULL)
-    {
-        fprintf(stderr, "malloc failed!\n");
-        return 1;
-    }
+    // Prevents accidental flags by setting every value to 0.
+    memset(&game, 0, sizeof(game));
+    game.title = NULL;
 
-    strcpy(game.title, title);
-    printf("Title copied: '%s'\n", game.title);
-
+    // Must be defined before creating a window and renderer.
     game.win_w = 320 << 1;
     game.win_h = 240 << 1;
 
+    game.title = string("SPRITE: PROOF OF CONCEPT");
+
     init_everything(&game);
 
-    // Stores a dithered image of The Houses of Parliment.
-    img_t house("./dither.bmp");
-    house.createTextureFromSurface(game.renderer);
+    game.framerate_target = 60;
+    const double ms_framerate_target = 1.0f / game.framerate_target;
+    
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(game.renderer, &info);
+    printf("Renderer: %s\n", info.name);
+    printf("Flags: %d\n", info.flags);
 
-    sprite_t sprite(&house, 320, 256);
+    // Stores a dithered image of The Houses of Parliment.
+    img = create_img_t(game.renderer, "./dither.bmp", "Parlements de Londres");
+
+    // Defines a sprite with the recently allocated image.
+    sprite_t sprite(img, 320, 256);
     sprite.fScale(1.0f);
 
     sprite.setClipPosition(
-        (sprite.getAtlas()->getData()->w >> 1) - (sprite.getClipFrame().w >> 2),
-        (sprite.getAtlas()->getData()->h >> 1) - (sprite.getClipFrame().h)
+        (sprite.getAtlas()->area.w >> 1) - (sprite.getClipFrame().w >> 2),
+        (sprite.getAtlas()->area.h >> 1) - (sprite.getClipFrame().h)
     );
 
     sprite.position(
@@ -53,59 +61,33 @@ int main()
         game.center.y - (sprite.getFrame().h >> 1)
     );
 
-    SDL_RendererInfo info;
-    SDL_GetRendererInfo(game.renderer, &info);
-    printf("Renderer: %s\n", info.name);
-    printf("Flags: %d\n", info.flags);
+    memset(&mouse, 0, sizeof(mouse));
+    mouse.sensitivity = 180.0f;
 
-    mouse_t mouse; memset(&mouse, 0, sizeof(mouse));
-    mouse.sensitivity = 4.0f;
-
-    keyboard_t clavier; // Clavier is keyboard in French, it looks and sounds cooler imo.
     memset(&clavier, 0, sizeof(clavier));
-
-    // Delta time variables
-    Uint64 current = SDL_GetPerformanceCounter();
-    Uint64 previous = 0;
-    float delta = 0.0f;
-    const Uint64 freq = SDL_GetPerformanceFrequency();
 
     // Positive directions move down and right.
     // Negative directions move up and left.
     int dir[2];
     float distance = 360.0f;
 
-    // Calculates the velocity of horizontal and vertical movement
-    auto get_horizontal = [&]() -> float
-    { return dir[0] * distance * delta ; };
-
-    auto get_vertical = [&]() -> float
-    { return dir[1] * distance * delta; };
-
     uint8_t first_frame = 0;
 
     float scale = 1.0f;
 
+    double dt = 0.0f;
+
+    // Calculates the velocity of horizontal and vertical movement
+    auto get_horizontal = [&]() -> float
+    { return dir[0] * distance * dt ; };
+
+    auto get_vertical = [&]() -> float
+    { return dir[1] * distance * dt; };
+
     while(true) // All game logic goes here.
     {
-        /* FPS counter. May decomment later.
-        static Uint32 lastTime = 0;
-        static int frames = 0;
-        frames++;
-
-        if (SDL_GetTicks() - lastTime > 1000) {
-            printf("FPS: %d\n", frames);
-            frames = 0;
-            lastTime = SDL_GetTicks();
-        }
-        */
-
-        // Calculate delta time
-        current = SDL_GetPerformanceCounter();
-        // Delta time is the temporal difference between the current and the previous frame.
-        delta = (float)(current - previous) / (float)freq;
-        if (delta > 0.05f) delta = 0.05f; // Prevents spiral of death
-        previous = current;
+        // Calculate dt time
+        uint64_t frame_start = SDL_GetPerformanceCounter();
 
         clavier.state = (uint8_t*) SDL_GetKeyboardState(NULL);
 
@@ -150,8 +132,8 @@ int main()
 
         if ((mouse.buttonflags & SDL_BUTTON_LEFT) == true && mouse.moving == true)
         {
-            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * -1);
-            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * -1);
+            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * dt * -1);
+            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * dt * -1);
 
             sprite.setClipPosition(dx, dy);
         }
@@ -197,14 +179,18 @@ int main()
             // if (clavier.state[SDL_SCANCODE_DOWN] && !clavier.state[SDL_SCANCODE_UP] && dir[1] == -1) dir[1] = 1;
             // if (!clavier.state[SDL_SCANCODE_DOWN] && clavier.state[SDL_SCANCODE_UP] && dir[1] == 1) dir[1] = -1;
 
-            scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * delta : (clavier.state[SDL_SCANCODE_X] ? -1.0f * delta : 0));
+            if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X])
+                scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * dt : (clavier.state[SDL_SCANCODE_X] ? -1.0f * dt : 0));
 
-            sprite.position(
-                sprite.getPosition_x() + get_horizontal(),
-                sprite.getPosition_y() + get_vertical()
-            );
+            if (dir[0] != 0 || dir[1] != 0)
+            {
+                sprite.position(
+                    sprite.getPosition_x() + get_horizontal(),
+                    sprite.getPosition_y() + get_vertical()
+                );
+            }
 
-            sprite.fScale(scale);
+            if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X]) sprite.fScale(scale);
 
             sprite.render(game.renderer);
 
@@ -214,15 +200,24 @@ int main()
             if (first_frame == 0) first_frame++;
         }
 
-        // Add this even with VSync
-        SDL_Delay(1); // Tiny sleep prevents CPU from spinning
+        uint64_t frame_end = SDL_GetPerformanceCounter();
+
+        dt = (double) (frame_end - frame_start) / (double) SDL_GetPerformanceFrequency();
+
+        if (dt < ms_framerate_target) // Prevents spiral of death
+            SDL_Delay((ms_framerate_target - dt) * 1000.0f); // Tiny sleep prevents CPU from spinning
+            dt = ms_framerate_target;        
     }
+
+    free_img_t(img);
 
     free(game.title);
 
+    SDL_DestroyRenderer(game.renderer);
     SDL_DestroyWindow(game.window);
+
     IMG_Quit();
     SDL_Quit();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
