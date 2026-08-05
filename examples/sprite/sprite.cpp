@@ -28,9 +28,11 @@ int main()
     memset(&game, 0, sizeof(game));
     game.title = NULL;
 
+    game.winflags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
+
     // Must be defined before creating a window and renderer.
-    game.win_w = 320 << 1;
-    game.win_h = 240 << 1;
+    const int base_win_w = game.win_w = 320 << 1;
+    const int base_win_h = game.win_h = 200 << 1;
 
     game.title = string("SPRITE: PROOF OF CONCEPT");
 
@@ -74,6 +76,7 @@ int main()
     uint8_t first_frame = 0;
 
     float scale = 1.0f;
+    float window_scale = 1.0f;
 
     double dt = 0.0f;
 
@@ -142,7 +145,9 @@ int main()
         clavier.pressed = (
             clavier.state[SDL_SCANCODE_RIGHT] || clavier.state[SDL_SCANCODE_LEFT] ||
             clavier.state[SDL_SCANCODE_DOWN] || clavier.state[SDL_SCANCODE_UP] ||
-            clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X]) ? true : false;
+            clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X] ||
+            clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_V] ||
+            clavier.state[SDL_SCANCODE_F] || clavier.state[SDL_SCANCODE_D]) ? true : false;
         
         // I realized both objects and window/UI must have separate input handlers.
         // Avoids doing rendering and heavy stuff is there are no differences between the last and current frames.
@@ -170,17 +175,11 @@ int main()
             if (clavier.state[SDL_SCANCODE_RIGHT] && !clavier.state[SDL_SCANCODE_LEFT] && dir[0] == -1) dir[0] = 1;
             if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT] && dir[0] == 1) dir[0] = -1;
 
-            // Left it just in case.
-            // if (!clavier.state[SDL_SCANCODE_DOWN] && !clavier.state[SDL_SCANCODE_UP]) dir[1] = 0;
-
-            // if (clavier.state[SDL_SCANCODE_DOWN] && !clavier.state[SDL_SCANCODE_UP]) dir[1] = 1;
-            // else if (!clavier.state[SDL_SCANCODE_DOWN] && clavier.state[SDL_SCANCODE_UP]) dir[1] = -1;
-
-            // if (clavier.state[SDL_SCANCODE_DOWN] && !clavier.state[SDL_SCANCODE_UP] && dir[1] == -1) dir[1] = 1;
-            // if (!clavier.state[SDL_SCANCODE_DOWN] && clavier.state[SDL_SCANCODE_UP] && dir[1] == 1) dir[1] = -1;
-
             if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X])
                 scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * dt : (clavier.state[SDL_SCANCODE_X] ? -1.0f * dt : 0));
+
+            if (clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_D]) window_scale += 0.01f;
+            if (clavier.state[SDL_SCANCODE_V] || clavier.state[SDL_SCANCODE_V]) window_scale -= 0.01f;
 
             if (dir[0] != 0 || dir[1] != 0)
             {
@@ -191,6 +190,19 @@ int main()
             }
 
             if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X]) sprite.fScale(scale);
+
+            if (clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_V])
+            {
+                SDL_GetWindowSize(game.window, (int *) &game.win_w, (int *) &game.win_h);
+                SDL_SetWindowSize(game.window, (int) (base_win_w * window_scale), (int) (base_win_h * window_scale));
+            }
+
+            if (clavier.state[SDL_SCANCODE_D] || clavier.state[SDL_SCANCODE_F])
+            {
+                SDL_GetWindowSize(game.window, (int *) &game.win_w, (int *) &game.win_h);
+                SDL_RenderSetScale(game.renderer, window_scale, window_scale);
+                SDL_SetWindowSize(game.window, (int) (base_win_w * window_scale), (int) (base_win_h * window_scale));
+            }
 
             sprite.render(game.renderer);
 
