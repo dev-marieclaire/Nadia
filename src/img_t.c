@@ -10,18 +10,16 @@ img_t *create_img_t(SDL_Renderer *dest, const char *src, const char *name)
     if (!img) printf("Couldn't allocate memory.");
 
     img->texture = load_img_data(src, dest);
+    if (!img->texture)
+    {
+        fprintf(stderr, "Failed to load texture: %s\n", SDL_GetError());
+        free(img);
+        return NULL;
+    }
 
     if (name)
     {
-        img->name = (char*) name;
-        size_t len = strlen(img->name);
-
-        img->name = (char*) malloc(len + 1);
-        if (img->name == NULL)
-        {
-            fprintf(stderr, "Malloc failed.\n");
-            return NULL;
-        }
+        img->name = string(name);
     }
     else printf("Warning: No image name set.\n");
 

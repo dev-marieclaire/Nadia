@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-// #include <time.h>
 
 #include "init.h"
 
@@ -218,7 +217,7 @@ int main()
 
         if (dt < ms_framerate_target) // Prevents spiral of death
             SDL_Delay((ms_framerate_target - dt) * 1000.0f); // Tiny sleep prevents CPU from spinning
-            dt = ms_framerate_target;        
+            dt = ms_framerate_target;
     }
 
     free_img_t(img);

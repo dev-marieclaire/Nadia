@@ -11,7 +11,6 @@ typedef struct game_t
     uint16_t        framerate_target;
 
     SDL_Renderer    *renderer; // 8 Bytes
-    SDL_Texture     *texture;
 
     SDL_Rect        rect; // 16 Bytes
     SDL_Event       event; // 56 Bytes
