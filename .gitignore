@@ -8,3 +8,4 @@ build/main
 build/main
 examples/sprite/build/sprite
 examples/sprite/build/dither.bmp
+examples/animated_sprites/idle.png
