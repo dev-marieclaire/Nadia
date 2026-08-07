@@ -21,7 +21,7 @@
 #include "sprite.h"
 
 #include "animation_t.h"
-#include "clock_t.h"
+#include "delta_t.h"
 
 int main()
 {
@@ -41,14 +41,14 @@ int main()
     const int base_win_w = game.win_w = 320 << 1;
     const int base_win_h = game.win_h = 200 << 1;
 
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+
     game.title = string("ANIMATED SPRITES");
     
     init_everything(&game);
 
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-
     game.framerate_target = 60;
-    petite_clock_t *clock = create_clock_t(game.framerate_target);
+    delta_t *clock = create_delta_t(game.framerate_target);
 
     sheet = create_img_t(game.renderer, "./idle.png", "idle");
 

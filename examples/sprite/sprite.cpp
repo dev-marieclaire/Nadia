@@ -15,6 +15,8 @@
 #include "img_t.h"
 #include "sprite.h"
 
+#include "delta_t.h"
+
 int main()
 {
     game_t game;
@@ -33,12 +35,14 @@ int main()
     const int base_win_w = game.win_w = 320 << 1;
     const int base_win_h = game.win_h = 200 << 1;
 
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+
     game.title = string("SPRITE: PROOF OF CONCEPT");
 
     init_everything(&game);
 
     game.framerate_target = 60;
-    const double ms_framerate_target = 1.0f / game.framerate_target;
+    delta_t *clock = create_delta_t(game.framerate_target);
     
     SDL_RendererInfo info;
     SDL_GetRendererInfo(game.renderer, &info);
@@ -77,19 +81,16 @@ int main()
     float scale = 1.0f;
     float window_scale = 1.0f;
 
-    double dt = 0.0f;
-
     // Calculates the velocity of horizontal and vertical movement
     auto get_horizontal = [&]() -> float
-    { return dir[0] * distance * dt ; };
+    { return dir[0] * distance * clock->delta_time; };
 
     auto get_vertical = [&]() -> float
-    { return dir[1] * distance * dt; };
+    { return dir[1] * distance * clock->delta_time; };
 
     while(true) // All game logic goes here.
     {
-        // Calculate dt time
-        uint64_t frame_start = SDL_GetPerformanceCounter();
+        clock->beginning = SDL_GetPerformanceCounter();
 
         clavier.state = (uint8_t*) SDL_GetKeyboardState(NULL);
 
@@ -134,8 +135,8 @@ int main()
 
         if ((mouse.buttonflags & SDL_BUTTON_LEFT) == true && mouse.moving == true)
         {
-            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * dt * -1);
-            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * dt * -1);
+            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * (clock->delta_time) * -1);
+            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * (clock->delta_time) * -1);
 
             sprite.setClipPosition(dx, dy);
         }
@@ -147,6 +148,12 @@ int main()
             clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X] ||
             clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_V] ||
             clavier.state[SDL_SCANCODE_F] || clavier.state[SDL_SCANCODE_D]) ? true : false;
+        
+        if (clavier.state[SDL_SCANCODE_A]) window_scale += 0.5f * clock->delta_time;
+            if (clavier.state[SDL_SCANCODE_S]) window_scale -= 0.5f * clock->delta_time;
+
+            if (window_scale < 0.2f) window_scale = 0.2f;
+            if (window_scale > 3.0f) window_scale = 3.0f;
         
         // I realized both objects and window/UI must have separate input handlers.
         // Avoids doing rendering and heavy stuff is there are no differences between the last and current frames.
@@ -175,10 +182,7 @@ int main()
             if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT] && dir[0] == 1) dir[0] = -1;
 
             if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X])
-                scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * dt : (clavier.state[SDL_SCANCODE_X] ? -1.0f * dt : 0));
-
-            if (clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_D]) window_scale += 0.01f;
-            if (clavier.state[SDL_SCANCODE_V] || clavier.state[SDL_SCANCODE_V]) window_scale -= 0.01f;
+                scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * (clock->delta_time) : (clavier.state[SDL_SCANCODE_X] ? -1.0f * (clock->delta_time) : 0));
 
             if (dir[0] != 0 || dir[1] != 0)
             {
@@ -190,17 +194,13 @@ int main()
 
             if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X]) sprite.fScale(scale);
 
-            if (clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_V])
+            if (clavier.state[SDL_SCANCODE_A] || clavier.state[SDL_SCANCODE_S])
             {
-                SDL_GetWindowSize(game.window, (int *) &game.win_w, (int *) &game.win_h);
-                SDL_SetWindowSize(game.window, (int) (base_win_w * window_scale), (int) (base_win_h * window_scale));
-            }
-
-            if (clavier.state[SDL_SCANCODE_D] || clavier.state[SDL_SCANCODE_F])
-            {
-                SDL_GetWindowSize(game.window, (int *) &game.win_w, (int *) &game.win_h);
-                SDL_RenderSetScale(game.renderer, window_scale, window_scale);
-                SDL_SetWindowSize(game.window, (int) (base_win_w * window_scale), (int) (base_win_h * window_scale));
+                // SDL_GetWindowSize(game.window, (int *) &game.win_w, (int *) &game.win_h);
+                int win_w = base_win_w * window_scale;
+                int win_h = base_win_h * window_scale;
+                SDL_SetWindowSize(game.window, win_w, win_h);
+                SDL_RenderSetLogicalSize(game.renderer, base_win_w, base_win_h);
             }
 
             sprite.render(game.renderer);
@@ -211,13 +211,13 @@ int main()
             if (first_frame == 0) first_frame++;
         }
 
-        uint64_t frame_end = SDL_GetPerformanceCounter();
+        clock->ending = SDL_GetPerformanceCounter();
+        clock->ms_delta_time = get_delta_time_in_ms(
+            clock->delta_time = get_delta_time(clock->beginning, clock->ending)
+        );
 
-        dt = (double) (frame_end - frame_start) / (double) SDL_GetPerformanceFrequency();
-
-        if (dt < ms_framerate_target) // Prevents spiral of death
-            SDL_Delay((ms_framerate_target - dt) * 1000.0f); // Tiny sleep prevents CPU from spinning
-            dt = ms_framerate_target;
+        clock_delay(clock->delta_time, clock->ms_framerate_target);
+        clock->delta_time = get_delta_time(clock->beginning, SDL_GetPerformanceCounter());
     }
 
     free_img_t(img);

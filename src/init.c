@@ -20,23 +20,19 @@ void init_everything(game_t *game)
 
     game->window = init_window_from_game(game);
 
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    SDL_SetHint(SDL_HINT_VIDEODRIVER, "x11");
-
-    const char *driver = SDL_GetCurrentVideoDriver();
-    printf("Current video driver: %s\n", driver ? driver : "none");
-
-    if (game->window != NULL)
+    if (!game->window)
     {
-        game->renderer = init_renderer(game->window);
-
-        if (!game->renderer)
-        {   printf("Couldn't create SDL Renderer: %s", SDL_GetError());
-            exit(1);
-        }
+        printf("Error: Window doesn't exist.");
+        exit(1);
     }
-    else
-    { printf("Error: Window doesn't exist."); exit(1); }
+
+    game->renderer = init_renderer(game->window);
+
+    if (!game->renderer)
+    {
+        printf("Couldn't create SDL Renderer: %s", SDL_GetError());
+        exit(1);
+    }
 
     SDL_GetWindowSize(game->window, &game->rect.w, &game->rect.h);
     printf("Window size: %dx%d\n", game->rect.w, game->rect.h);
