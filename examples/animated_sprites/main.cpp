@@ -156,7 +156,7 @@ int main()
 
         bool is_moving = (dir[0] != 0);
 
-        target_speed_factor = clavier.state[SDL_SCANCODE_X] ? 2.0f : 1.0f;
+        target_speed_factor = clavier.state[SDL_SCANCODE_X] ? 3.0f : 1.0f;
         current_speed_factor += (target_speed_factor - current_speed_factor) * SMOOTH_FACTOR;
 
         animations[1]->delay_ms = clavier.state[SDL_SCANCODE_X] ? 64 : 96;

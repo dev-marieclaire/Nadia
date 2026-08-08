@@ -9,3 +9,13 @@ build/main
 examples/sprite/build/sprite
 examples/sprite/build/dither.bmp
 examples/animated_sprites/idle.png
+examples/animated_sprites/main.cpp
+.gitignore
+examples/animated_sprites/build/walk.png
+examples/animated_sprites/build/from idle.png
+examples/animated_sprites/walk.png
+examples/animated_sprites/from idle.png
+examples/animated_sprites/build/sprite
+examples/animated_sprites/build/sprite
+examples/animated_sprites/build/sprite
+examples/animated_sprites/build/sprite
