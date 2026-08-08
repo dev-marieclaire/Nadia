@@ -11,18 +11,17 @@ class sprite_t
         SDL_Rect clip;  // Defines what the sprite is currently showing.
         img_t *atlas;   // The sprite's image.
 
-        int x, y;
-        int w, h;
-
-        float scale;
+        float scale, rotation_angle;
         int base_w, base_h;
+
+        bool flip_h = false;
 
     public:
 
         void change_frame(uint16_t x, uint16_t y)
         {
-            int max_x = atlas->area.w - clip.w;
-            int max_y = atlas->area.h - clip.h;
+            int max_x = atlas->w - clip.w;
+            int max_y = atlas->h - clip.h;
 
             if (x < 0) x = 0;
             if (x > max_x) x = max_x;
@@ -34,15 +33,28 @@ class sprite_t
             clip.y = y;
         }
 
-    // Getter zone.
-        SDL_Rect getPosition()
-        { return {x, y}; }
+        void set_frame_by_index(uint16_t frame_index, uint16_t frames_per_row = 0)
+        {
+            if (!atlas) return;
 
+            if (frames_per_row == 0)
+                frames_per_row = atlas->w / clip.w;
+
+                uint16_t row = frame_index / frames_per_row;
+                uint16_t col = frame_index % frames_per_row;
+
+                int x = col * clip.w;
+                int y = row * clip.h;
+
+                setClipPosition(x, y);
+        }
+
+    // Getter zone.
         int getPosition_x()
-        { return x; }
+        { return destination.x; }
 
         int getPosition_y()
-        { return y; }
+        { return destination.y; }
 
         SDL_Rect getFrame()
         { return destination; }
@@ -58,10 +70,13 @@ class sprite_t
 
     // Setter zone.
         void position(int x, int y)
-        { destination.x = this->x = x; destination.y = this->y = y; };
+        { destination.x = x; destination.y = y; };
 
         void setClipDimensions(int w, int h)
         { clip.w = w; clip.h = h; }
+
+        void setDimensions(int w, int h)
+        { clip.w = destination.w = w; clip.h = destination.h = h; }
 
         void fScale(float factor);
 
@@ -69,9 +84,31 @@ class sprite_t
 
         void setClipPosition(int x, int y);
 
+        bool setAtlas(img_t *img)
+        {
+            if (!img)
+            {
+                printf("Couldn't change image: new image is null");
+                return false;
+            }
+
+            atlas = img;
+            return (img) ? true : false;
+        }
+
+        void flip_horizontally(bool flip)
+        { flip_h = flip; }
+
         int render(SDL_Renderer *dest)
         {
-            int result = SDL_RenderCopy(dest, atlas->texture, &clip, &destination);
+            SDL_RendererFlip flip = flip_h ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+
+            int result = SDL_RenderCopyEx(
+                dest, atlas->texture,
+                &clip, &destination,
+                rotation_angle, NULL,
+                flip
+            );
             if (result != 0)
                 printf("RenderCopy error: %s\n", SDL_GetError());
 

@@ -42,7 +42,7 @@ int main()
     init_everything(&game);
 
     game.framerate_target = 60;
-    delta_t *clock = create_delta_t(game.framerate_target);
+    delta_t *delta = create_delta_t(game.framerate_target);
     
     SDL_RendererInfo info;
     SDL_GetRendererInfo(game.renderer, &info);
@@ -57,8 +57,8 @@ int main()
     sprite.fScale(1.0f);
 
     sprite.setClipPosition(
-        (sprite.getAtlas()->area.w >> 1) - (sprite.getClipFrame().w >> 2),
-        (sprite.getAtlas()->area.h >> 1) - (sprite.getClipFrame().h)
+        (sprite.getAtlas()->w >> 1) - (sprite.getClipFrame().w >> 2),
+        (sprite.getAtlas()->h >> 1) - (sprite.getClipFrame().h)
     );
 
     sprite.position(
@@ -67,14 +67,14 @@ int main()
     );
 
     memset(&mouse, 0, sizeof(mouse));
-    mouse.sensitivity = 180.0f;
+    mouse.sensitivity = 0.24f;
 
     memset(&clavier, 0, sizeof(clavier));
 
     // Positive directions move down and right.
     // Negative directions move up and left.
     int dir[2];
-    float distance = 360.0f;
+    float distance = 0.48f;
 
     uint8_t first_frame = 0;
 
@@ -83,14 +83,19 @@ int main()
 
     // Calculates the velocity of horizontal and vertical movement
     auto get_horizontal = [&]() -> float
-    { return dir[0] * distance * clock->delta_time; };
+    { return dir[0] * distance * delta->time_ms; };
 
     auto get_vertical = [&]() -> float
-    { return dir[1] * distance * clock->delta_time; };
+    { return dir[1] * distance * delta->time_ms; };
 
     while(true) // All game logic goes here.
     {
-        clock->beginning = SDL_GetPerformanceCounter();
+        uint32_t current_time = SDL_GetTicks();
+        delta->time_ms = current_time - delta->previous_time_ms;
+        delta->previous_time_ms = current_time;
+
+        if (delta->time_ms > 100) delta->time_ms = 16;
+        if (delta->time_ms == 0) delta->time_ms = 1;
 
         clavier.state = (uint8_t*) SDL_GetKeyboardState(NULL);
 
@@ -113,8 +118,8 @@ int main()
 
                         if (mouse.abs_x >= sprite.getFrame().x &&
                             mouse.abs_y >= sprite.getFrame().y &&
-                            mouse.abs_x <= sprite.getFrame().w + sprite.getFrame().x &&
-                            mouse.abs_y <= sprite.getFrame().h + sprite.getFrame().y)
+                            mouse.abs_x <= sprite.getFrame().w + sprite.getPosition_x() &&
+                            mouse.abs_y <= sprite.getFrame().h + sprite.getPosition_y())
                             mouse.clicking = true;
                     }
                     break;
@@ -135,8 +140,8 @@ int main()
 
         if ((mouse.buttonflags & SDL_BUTTON_LEFT) == true && mouse.moving == true)
         {
-            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * (clock->delta_time) * -1);
-            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * (clock->delta_time) * -1);
+            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * (delta->time_ms) * -1);
+            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * (delta->time_ms) * -1);
 
             sprite.setClipPosition(dx, dy);
         }
@@ -149,8 +154,8 @@ int main()
             clavier.state[SDL_SCANCODE_C] || clavier.state[SDL_SCANCODE_V] ||
             clavier.state[SDL_SCANCODE_F] || clavier.state[SDL_SCANCODE_D]) ? true : false;
         
-        if (clavier.state[SDL_SCANCODE_A]) window_scale += 0.5f * clock->delta_time;
-            if (clavier.state[SDL_SCANCODE_S]) window_scale -= 0.5f * clock->delta_time;
+        if (clavier.state[SDL_SCANCODE_A]) window_scale += 0.5f * delta->time_ms;
+            if (clavier.state[SDL_SCANCODE_S]) window_scale -= 0.5f * delta->time_ms;
 
             if (window_scale < 0.2f) window_scale = 0.2f;
             if (window_scale > 3.0f) window_scale = 3.0f;
@@ -171,7 +176,7 @@ int main()
 
             // Responsive horizontal movement.
             // This was implemented so whenever avoids key cancelling
-            // when pressing LEFT and RIGHT at the same time.
+            // when pressing LEFT and RIGHT at the same time_ms.
             // Unnecessary for vertical movement since there is no preceivable difference.
             if (!clavier.state[SDL_SCANCODE_RIGHT] && !clavier.state[SDL_SCANCODE_LEFT]) dir[0] = 0;
 
@@ -182,7 +187,7 @@ int main()
             if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT] && dir[0] == 1) dir[0] = -1;
 
             if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X])
-                scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * (clock->delta_time) : (clavier.state[SDL_SCANCODE_X] ? -1.0f * (clock->delta_time) : 0));
+                scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * (delta->time_ms) : (clavier.state[SDL_SCANCODE_X] ? -1.0f * (delta->time_ms) : 0));
 
             if (dir[0] != 0 || dir[1] != 0)
             {
@@ -211,13 +216,8 @@ int main()
             if (first_frame == 0) first_frame++;
         }
 
-        clock->ending = SDL_GetPerformanceCounter();
-        clock->ms_delta_time = get_delta_time_in_ms(
-            clock->delta_time = get_delta_time(clock->beginning, clock->ending)
-        );
-
-        clock_delay(clock->delta_time, clock->ms_framerate_target);
-        clock->delta_time = get_delta_time(clock->beginning, SDL_GetPerformanceCounter());
+        uint32_t elapsed = SDL_GetTicks() - current_time;
+        dt_delay(elapsed, delta->ms_framerate_target);
     }
 
     free_img_t(img);

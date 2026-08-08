@@ -7,34 +7,29 @@
 img_t *create_img_t(SDL_Renderer *dest, const char *src, const char *name)
 {
     img_t *img = (img_t*) malloc(sizeof(img_t));
-    if (!img) printf("Couldn't allocate memory.");
+    if (!img)
+    {
+        printf("Couldn't allocate memory for '%d'.", name);
+        return NULL;
+    }
+
+    if (name) img->name = string(name);
+    else printf("Warning: No image name set.\n");
 
     img->texture = load_img_data(src, dest);
     if (!img->texture)
     {
-        fprintf(stderr, "Failed to load texture: %s\n", SDL_GetError());
+        fprintf(stderr, "Failed to load texture for '%s': %s\n", name, SDL_GetError());
         free(img);
         return NULL;
     }
 
-    if (name)
-    {
-        img->name = string(name);
-    }
-    else printf("Warning: No image name set.\n");
+    SDL_QueryTexture(img->texture, NULL, NULL, &img->w, &img->h);
+    printf("'%s' dimensions: %dx%d\n", name, img->w, img->h);
 
-    if (img->texture)
-    {
-        img->area.x = img->area.y = 0;
-
-        SDL_QueryTexture(img->texture, NULL, NULL, &img->area.w, &img->area.h);
-
-        printf("Image dimensions: %dx%d\n", img->area.w, img->area.h);
-
-        return img;
-    }
+    if (img) return img;
     
-    printf("Failed to create image: %s", SDL_GetError());
+    printf("Failed to create '%s' image: %s", name, SDL_GetError());
     return NULL;
 }
 
@@ -66,6 +61,7 @@ SDL_Texture *load_img_data(const char *src, SDL_Renderer *dest)
     return texture;
 }
 
+/* Unused
 bool clear_img(SDL_Texture *texture)
 {
     if (texture) SDL_DestroyTexture(texture);
@@ -78,12 +74,12 @@ bool reload(img_t *img, const char *src, SDL_Renderer *dest)
         img->texture = load_img_data(src, dest);
     return (img) ? true : false;
 }
+*/
+
+
 
 void free_img_t(img_t *img)
 {
     if (img->texture) SDL_DestroyTexture(img->texture);
     free(img);
 }
-
-void change_position(SDL_Rect *rect, int x, int y)
-{ rect->x = x; rect->y = y; }

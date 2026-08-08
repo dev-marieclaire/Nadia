@@ -5,13 +5,13 @@ sprite_t::sprite_t(img_t *img, int w_px, int h_px)
     atlas = img;
     if (!atlas) printf("Sprite atlas is NULL.\n");
 
-    if (w_px > atlas->area.w) w_px = atlas->area.w;
-    if (h_px > atlas->area.h) h_px = atlas->area.h;
+    if (w_px > atlas->w) w_px = atlas->w;
+    if (h_px > atlas->h) h_px = atlas->h;
     
-    clip.x = clip.y = x = y = 0;
+    clip.x = clip.y = 0;
     clip.w = w_px; clip.h = h_px;
 
-    destination = {x, y, w_px, h_px};
+    destination = {0, 0, w_px, h_px};
 }
 
 void sprite_t::fScale(float factor)
@@ -43,12 +43,12 @@ void sprite_t::iScale(int factor)
 void sprite_t::setClipPosition(int x, int y)
 {
     if (x < 0) x = 0;
-    if (x > atlas->area.w - clip.w)
-        x = atlas->area.w - clip.w;
+    if (x > atlas->w - clip.w)
+        x = atlas->w - clip.w;
 
     if (y < 0) y = 0;
-    if (y > atlas->area.h - clip.h)
-        y = atlas->area.h - clip.h;
+    if (y > atlas->h - clip.h)
+        y = atlas->h - clip.h;
 
     clip.x = x;
     clip.y = y;
