@@ -13,4 +13,4 @@ I appreciate the work of the people behind these cool assets and I wont include 
 Please support the artists and creators.
 
 examples/animated_sprites:
-    - https://merakintsugi.itch.io/platformer-character-pack
+- https://merakintsugi.itch.io/platformer-character-pack
