@@ -34,6 +34,8 @@ screen_t screen = {
 
 delta_t *delta = create_delta_t(60);
 
+enum enum_animations { IDLE, FROM_IDLE, WALK };
+
 mouse_t mouse;
 keyboard_t clavier;
 
@@ -50,7 +52,7 @@ int main()
 
     img_t **images = (img_t **) malloc((uint8_t) sizeof(img_t *) * img_count);
 
-    for (int i = 0; i < img_count; i++)
+    for (int i = IDLE; i <= WALK; i++)
         images[i] = create_img_t(game.renderer, img_locations[i], img_names[i]);
 
     // Since every image has different sprite dimensions, well...
@@ -61,8 +63,9 @@ int main()
         (int) ( sizeof(animation_t *) * img_count )
     );
 
-    for (int i = 0; i < img_count; i++)
+    for (int i = IDLE; i <= WALK; i++)
     {
+        printf("Index: %d\n", i);
         int columns = images[i]->w / sprite_widths[i];
         int rows = images[i]->h / sprite_heights[i];
         int total_frames = columns * rows;
@@ -79,7 +82,7 @@ int main()
         }
     }
 
-    sprite_t sprite(images[0], sprite_widths[0], sprite_heights[0]);
+    sprite_t sprite(images[IDLE], sprite_widths[IDLE], sprite_heights[IDLE]);
 
     sprite.position(
         (screen.w - sprite.get_width() * WINSCALE) / WINSCALE,
@@ -101,7 +104,7 @@ int main()
     float current_speed_factor = 1.0f;
     float target_speed_factor = 1.0f;
 
-    uint8_t dir[2] = {0, 0};
+    int8_t  dir[2] = {0, 0};
 
     bool    is_moving = false;
     bool    animation_ended = false;
@@ -131,7 +134,7 @@ int main()
             if (game.event.type == SDL_QUIT) running = false;
         }
 
-        if (!clavier.pressed) dir[0] = 0;
+        dir[0] = 0;
         if (clavier.state[SDL_SCANCODE_RIGHT] && !clavier.state[SDL_SCANCODE_LEFT]) dir[0] = 1;
         if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT]) dir[0] = -1;
 
@@ -159,12 +162,12 @@ int main()
         {
             is_moving = false;
             transitioning = false;
-            animation_index = 0;
+            animation_index = IDLE;
 
             if (animation_ended)
             {
-                animations[0]->frame_index = 0;
-                animations[0]->timer_ms = 0;
+                animations[IDLE]->frame_index = 0;
+                animations[IDLE]->timer_ms = 0;
             }
         }
 
@@ -173,26 +176,26 @@ int main()
         {
             // if the 
             current_speed_factor += (target_speed_factor - current_speed_factor) * speed_change_factor;
-            animations[1]->delay_ms = clavier.state[SDL_SCANCODE_X] ? min_delay_ms : max_delay_ms;
+            animations[FROM_IDLE]->delay_ms = clavier.state[SDL_SCANCODE_X] ? min_delay_ms : max_delay_ms;
 
             // Begins from_transition animation.
-            if (animation_index == 0 && !transitioning)
+            if (animation_index == IDLE && !transitioning)
             {
-                animation_index = 1;
+                animation_index = FROM_IDLE;
                 transitioning = true;
 
-                animations[1]->frame_index = 0;
-                animations[1]->timer_ms = 0;
+                animations[FROM_IDLE]->frame_index = 0;
+                animations[FROM_IDLE]->timer_ms = 0;
             }
 
             // Begins walk animation
             if (transitioning && animation_ended)
             {
-                animation_index = 2;
+                animation_index = WALK;
                 transitioning = false;
 
-                animations[2]->frame_index = 0;
-                animations[2]->timer_ms = 0;
+                animations[WALK]->frame_index = 0;
+                animations[WALK]->timer_ms = 0;
             }
         }
 
