@@ -6,7 +6,8 @@
 
 // Initializes a renderer with some default values and performs a checking
 SDL_Renderer *init_renderer(SDL_Window *win)
-{   SDL_Renderer *r = SDL_CreateRenderer(win, -1, DEFAULT_REND_FLAGS);
+{
+    SDL_Renderer *r = SDL_CreateRenderer(win, -1, DEFAULT_REND_FLAGS);
 
     SDL_RendererInfo info;
     if (SDL_GetRendererInfo(r, &info) == 0)

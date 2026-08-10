@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL2/SDL.h>
 
 extern SDL_Renderer *init_renderer(SDL_Window *w);
