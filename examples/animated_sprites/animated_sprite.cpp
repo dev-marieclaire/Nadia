@@ -1,9 +1,9 @@
+// Animated Sprites example.
+
 // Sprite source:
 // https://merakintsugi.itch.io/platformer-character-pack
-// used file: idle.png
-// NOT INCLUDED IN THIS EXAMPLE, MANUALLY DOWNLOAD AND LOCATE IT.
-
-// Animated Sprites example.
+// used files: idle.png, from idle.png and walk.png
+// NOT INCLUDED IN THIS EXAMPLE, PLEASE DOWNLOAD AND LOCATE IT BY YOURSELF.
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
