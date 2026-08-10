@@ -1,8 +1,9 @@
 SRCDIR = ../../src/
-SRC = $(SRCDIR)*.cpp $(SRCDIR)*.c $(SRCDIR)**/*.c ./*.cpp
+SRC = $(SRCDIR)**/*.cpp $(SRCDIR)*.c $(SRCDIR)**/*.c ./*.cpp
 INCLUDE = -I../../include/
 BUILD = ./build
-OUT = $(BUILD)/sprite
+BIN = animated_sprite
+OUT = $(BUILD)/$(BIN)
 LFLAGS = `pkg-config --cflags --libs sdl2 SDL2_image`
 
 all: compile
@@ -17,4 +18,4 @@ compile:
 	g++ $(SRC) $(INCLUDE) -g -o $(OUT) $(LFLAGS)
 
 run:
-	cd ./build && SDL_VIDEODRIVER=x11 ./sprite
+	cd ./build && ./$(BIN)

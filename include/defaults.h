@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#define TITLE "WINDOW"
+#define DEFAULT_TITLE "WINDOW"
 
 #define DEFAULT_SCREEN_WIDTH    800
 #define DEFAULT_SCREEN_HEIGHT   600

@@ -2,7 +2,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "init/init_windefaults.h"
+#include "defaults.h"
 
 // Initializes a renderer with some default values and performs a checking
 SDL_Renderer *init_renderer(SDL_Window *win)
@@ -11,18 +11,19 @@ SDL_Renderer *init_renderer(SDL_Window *win)
     SDL_RendererInfo info;
     if (SDL_GetRendererInfo(r, &info) == 0)
         printf("Using renderer: %s\n", info.name);
-    else
-        printf("Failed to get renderer info: %s\n", SDL_GetError());
+    else printf("Failed to get renderer info: %s\n", SDL_GetError());
 
     return r;
 }
 
 // Initializes a renderer with custom values and performs a checking
-SDL_Renderer *init_custom_renderer(SDL_Window *win, int index, uint flags)
-{   SDL_Renderer *r = SDL_CreateRenderer(win, index, flags);
+SDL_Renderer *create_custom_renderer(SDL_Window *win, int index, uint flags)
+{
+    SDL_Renderer *r = SDL_CreateRenderer(win, index, flags);
 
     if (!r)
-    {   printf("Failed to create renderer: %s\n", SDL_GetError());
+    {
+        printf("Failed to create renderer: %s\n", SDL_GetError());
         exit(1);
     }
 

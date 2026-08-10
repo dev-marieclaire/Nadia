@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include "img_t.h"
+#include "Graphics/img_t.h"
 
 img_t *create_img_t(SDL_Renderer *dest, const char *src, const char *name)
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-typedef struct mouse_t
+typedef struct
 {
     int abs_x;
     int abs_y;

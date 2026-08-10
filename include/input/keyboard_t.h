@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct keyboard_t
+typedef struct
 {
     uint8_t *state;
     bool pressed;

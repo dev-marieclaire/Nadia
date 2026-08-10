@@ -1,5 +1,5 @@
 SRCDIR = ../../src/
-SRC = $(SRCDIR)*.cpp $(SRCDIR)*.c $(SRCDIR)**/*.c ./*.cpp
+SRC = $(SRCDIR)**/*.cpp $(SRCDIR)*.c $(SRCDIR)**/*.c ./*.cpp
 INCLUDE = -I../../include/
 BUILD = ./build
 OUT = $(BUILD)/sprite
@@ -17,4 +17,4 @@ compile:
 	g++ $(SRC) $(INCLUDE) -g -o $(OUT) $(LFLAGS)
 
 run:
-	cd ./build && SDL_VIDEODRIVER=x11 ./sprite
+	cd ./build && ./sprite

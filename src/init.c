@@ -2,15 +2,14 @@
 
 #include <SDL2/SDL.h>
 
-#include "init/init_window.h"
-#include "init/init_windefaults.h"
-#include "init/init_renderer.h"
-#include "init/init_img.h"
+#include "init.h"
+#include "graphics.h"
+#include "game_t.h"
 
-#include "game.h"
+#include "defaults.h"
 
 // Inits SDL libs and loads defaults.
-void init_everything(game_t *game)
+void init_everything(game_t *game, const char *title, screen_t *win_area, int winflags, uint rend_index, int rend_flags)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0)
     {
@@ -18,7 +17,12 @@ void init_everything(game_t *game)
         exit(1);
     }
 
-    game->window = init_window_from_game(game);
+    game->window = create_custom_window(
+        title,
+        win_area->x, win_area->y,
+        win_area->w, win_area->h,
+        winflags
+    );
 
     if (!game->window)
     {
@@ -26,7 +30,7 @@ void init_everything(game_t *game)
         exit(1);
     }
 
-    game->renderer = init_renderer(game->window);
+    game->renderer = create_custom_renderer(game->window, rend_index, rend_flags);
 
     if (!game->renderer)
     {
@@ -36,8 +40,6 @@ void init_everything(game_t *game)
 
     SDL_GetWindowSize(game->window, &game->rect.w, &game->rect.h);
     printf("Window size: %dx%d\n", game->rect.w, game->rect.h);
-
-    game->center = { game->rect.w >> 1, game->rect.h >> 1 };
 
     init_img(DEFAULT_IMG_FLAGS);
 }

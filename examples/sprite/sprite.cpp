@@ -6,87 +6,70 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "init.h"
+#include "defaults.h"
 
-#include "screen.h"
+#include "init.h"
+#include "graphics.h"
 #include "input.h"
 
 #include "strings.h"
-#include "img_t.h"
-#include "sprite.h"
 
 #include "delta_t.h"
 
+#define TITLE       (char *) "ANIMATED SPRITES"
+#define BASE_WIN_W  (int) (320 << 1)
+#define BASE_WIN_H  (int) (200 << 1)
+#define WINFLAGS    SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS
+
+game_t game;
+screen_t screen = {
+    BASE_WIN_W, BASE_WIN_H,
+    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED
+};
+
+delta_t *delta = create_delta_t(60);
+
+mouse_t mouse;
+keyboard_t clavier; // Clavier is keyboard in French, it looks and sounds cooler imo.
+
 int main()
 {
-    game_t game;
-    img_t *img;
-
-    mouse_t mouse;
-    keyboard_t clavier; // Clavier is keyboard in French, it looks and sounds cooler imo.
-
-    // Prevents accidental flags by setting every value to 0.
-    memset(&game, 0, sizeof(game));
-    game.title = NULL;
-
-    game.winflags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS;
-
-    // Must be defined before creating a window and renderer.
-    const int base_win_w = game.win_w = 320 << 1;
-    const int base_win_h = game.win_h = 200 << 1;
-
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+    init_everything(&game, TITLE, &screen, WINFLAGS, -1, DEFAULT_REND_FLAGS);
 
-    game.title = string("SPRITE: PROOF OF CONCEPT");
-
-    init_everything(&game);
-
-    game.framerate_target = 60;
-    delta_t *delta = create_delta_t(game.framerate_target);
-    
     SDL_RendererInfo info;
     SDL_GetRendererInfo(game.renderer, &info);
     printf("Renderer: %s\n", info.name);
     printf("Flags: %d\n", info.flags);
 
     // Stores a dithered image of The Houses of Parliment.
-    img = create_img_t(game.renderer, "./dither.bmp", "Parlements de Londres");
+    img_t *img = create_img_t(game.renderer, "./dither.bmp", "Parlements de Londres");
 
     // Defines a sprite with the recently allocated image.
-    sprite_t sprite(img, 320, 256);
-    sprite.fScale(1.0f);
+    sprite_t sprite(img, img->w >> 2, img->h >> 2);
 
-    sprite.setClipPosition(
-        (sprite.getAtlas()->w >> 1) - (sprite.getClipFrame().w >> 2),
-        (sprite.getAtlas()->h >> 1) - (sprite.getClipFrame().h)
+    sprite.frame_position(
+        img->w - sprite.get_width(),
+        sprite.get_height() - (sprite.get_height() >> 3)
     );
 
     sprite.position(
-        game.center.x - (sprite.getFrame().w >> 1),
-        game.center.y - (sprite.getFrame().h >> 1)
+        (screen.w / 2) - (sprite.get_width() >> 1),
+        (screen.h / 2) - (sprite.get_height() >> 1)
     );
 
-    memset(&mouse, 0, sizeof(mouse));
     mouse.sensitivity = 0.24f;
-
-    memset(&clavier, 0, sizeof(clavier));
 
     // Positive directions move down and right.
     // Negative directions move up and left.
-    int dir[2];
-    float distance = 0.48f;
+    int     dir[2] = {0, 0};
+    float   distance = 0.48f;
 
     uint8_t first_frame = 0;
 
-    float scale = 1.0f;
-    float window_scale = 1.0f;
-
-    // Calculates the velocity of horizontal and vertical movement
-    auto get_horizontal = [&]() -> float
-    { return dir[0] * distance * delta->time_ms; };
-
-    auto get_vertical = [&]() -> float
-    { return dir[1] * distance * delta->time_ms; };
+    float   scale = 1.0f;
+    float   window_scale = 1.0f;
+    delta_t *delta = create_delta_t(60);
 
     while(true) // All game logic goes here.
     {
@@ -116,10 +99,10 @@ int main()
                         mouse.click_pos.x = mouse.abs_x;
                         mouse.click_pos.y = mouse.abs_y;
 
-                        if (mouse.abs_x >= sprite.getFrame().x &&
-                            mouse.abs_y >= sprite.getFrame().y &&
-                            mouse.abs_x <= sprite.getFrame().w + sprite.getPosition_x() &&
-                            mouse.abs_y <= sprite.getFrame().h + sprite.getPosition_y())
+                        if (mouse.abs_x >= sprite.get_position().x &&
+                            mouse.abs_y >= sprite.get_position().y &&
+                            mouse.abs_x <= sprite.get_frame_width() + sprite.get_position().x &&
+                            mouse.abs_y <= sprite.get_frame_height() + sprite.get_position().y)
                             mouse.clicking = true;
                     }
                     break;
@@ -140,10 +123,10 @@ int main()
 
         if ((mouse.buttonflags & SDL_BUTTON_LEFT) == true && mouse.moving == true)
         {
-            int dx = sprite.getClipFrame().x + ((mouse.rel_x * mouse.sensitivity) * (delta->time_ms) * -1);
-            int dy = sprite.getClipFrame().y + ((mouse.rel_y * mouse.sensitivity) * (delta->time_ms) * -1);
+            uint32_t dx = sprite.get_frame_position().x + ((mouse.rel_x * mouse.sensitivity) * (delta->time_ms) * -1);
+            uint32_t dy = sprite.get_frame_position().y + ((mouse.rel_y * mouse.sensitivity) * (delta->time_ms) * -1);
 
-            sprite.setClipPosition(dx, dy);
+            sprite.set_frame(dx, dy);
         }
 
         // Checks if a key was pressed while avoiding interruptions in the player's movement.
@@ -155,15 +138,16 @@ int main()
             clavier.state[SDL_SCANCODE_F] || clavier.state[SDL_SCANCODE_D]) ? true : false;
         
         if (clavier.state[SDL_SCANCODE_A]) window_scale += 0.5f * delta->time_ms;
-            if (clavier.state[SDL_SCANCODE_S]) window_scale -= 0.5f * delta->time_ms;
+        if (clavier.state[SDL_SCANCODE_S]) window_scale -= 0.5f * delta->time_ms;
 
-            if (window_scale < 0.2f) window_scale = 0.2f;
-            if (window_scale > 3.0f) window_scale = 3.0f;
+        if (window_scale < 0.2f) window_scale = 0.2f;
+        if (window_scale > 3.0f) window_scale = 3.0f;
         
         // I realized both objects and window/UI must have separate input handlers.
         // Avoids doing rendering and heavy stuff is there are no differences between the last and current frames.
         if (clavier.pressed == true || mouse.clicking == true || first_frame == 0)
         {
+            // printf("press!");
             // #fcd7d7
             SDL_SetRenderDrawColor(game.renderer, 0xfc, 0xd7, 0xd7, 0xff);
             SDL_RenderClear(game.renderer);
@@ -178,22 +162,25 @@ int main()
             // This was implemented so whenever avoids key cancelling
             // when pressing LEFT and RIGHT at the same time_ms.
             // Unnecessary for vertical movement since there is no preceivable difference.
-            if (!clavier.state[SDL_SCANCODE_RIGHT] && !clavier.state[SDL_SCANCODE_LEFT]) dir[0] = 0;
-
+            dir[0] = 0;
             if (clavier.state[SDL_SCANCODE_RIGHT] && !clavier.state[SDL_SCANCODE_LEFT]) dir[0] = 1;
-            else if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT]) dir[0] = -1;
-
-            if (clavier.state[SDL_SCANCODE_RIGHT] && !clavier.state[SDL_SCANCODE_LEFT] && dir[0] == -1) dir[0] = 1;
-            if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT] && dir[0] == 1) dir[0] = -1;
+            if (!clavier.state[SDL_SCANCODE_RIGHT] && clavier.state[SDL_SCANCODE_LEFT]) dir[0] = -1;
 
             if (clavier.state[SDL_SCANCODE_Z] || clavier.state[SDL_SCANCODE_X])
-                scale += (clavier.state[SDL_SCANCODE_Z] ? 1.0f * (delta->time_ms) : (clavier.state[SDL_SCANCODE_X] ? -1.0f * (delta->time_ms) : 0));
+            {
+                scale += (clavier.state[SDL_SCANCODE_Z]
+                    ? 0.001f * (delta->time_ms)
+                    : (clavier.state[SDL_SCANCODE_X] ? -0.001f * (delta->time_ms) : 0));
+            }
+
+            // printf("Vel x: %f\n", (dir[0] * distance * delta->time_ms));
+            // printf("Delta time: %d, Distance: %f\n", delta->time_ms, distance);
 
             if (dir[0] != 0 || dir[1] != 0)
             {
                 sprite.position(
-                    sprite.getPosition_x() + get_horizontal(),
-                    sprite.getPosition_y() + get_vertical()
+                    sprite.get_position().x + (dir[0] * distance * delta->time_ms),
+                    sprite.get_position().y + (dir[1] * distance * delta->time_ms)
                 );
             }
 
@@ -201,11 +188,10 @@ int main()
 
             if (clavier.state[SDL_SCANCODE_A] || clavier.state[SDL_SCANCODE_S])
             {
-                // SDL_GetWindowSize(game.window, (int *) &game.win_w, (int *) &game.win_h);
-                int win_w = base_win_w * window_scale;
-                int win_h = base_win_h * window_scale;
+                int win_w = BASE_WIN_W * window_scale;
+                int win_h = BASE_WIN_H * window_scale;
                 SDL_SetWindowSize(game.window, win_w, win_h);
-                SDL_RenderSetLogicalSize(game.renderer, base_win_w, base_win_h);
+                SDL_RenderSetLogicalSize(game.renderer, BASE_WIN_W, BASE_WIN_H);
             }
 
             sprite.render(game.renderer);

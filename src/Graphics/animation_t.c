@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 
-#include "animation_t.h"
+#include "Graphics/animation_t.h"
 
 #include "strings.h"
 
