@@ -1,11 +1,14 @@
 // init.c
 
-#include <SDL2/SDL.h>
-
-#include "init.h"
 #include "graphics.h"
-#include "game_t.h"
 
+#ifdef __DJGPP__
+
+#else
+
+#include <SDL2/SDL.h>
+#include "game_t.h"
+#include "init.h"
 #include "defaults.h"
 
 // Inits SDL libs and loads defaults.
@@ -43,3 +46,5 @@ void init_everything(game_t *game, const char *title, screen_t *win_area, int wi
 
     init_img(DEFAULT_IMG_FLAGS);
 }
+
+#endif

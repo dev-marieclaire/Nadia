@@ -1,3 +1,8 @@
+
+#ifdef __DJGPP__
+
+#else
+
 #include "graphics.h"
 
 sprite_t::sprite_t(img_t *img, uint32_t w_px, uint32_t h_px)
@@ -96,7 +101,7 @@ int sprite_t::render(SDL_Renderer *dest)
     SDL_RendererFlip flip = flip_h ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
     int result = SDL_RenderCopyEx(
-        dest, atlas->texture,
+        dest, atlas->data,
         &frame, &render_area,
         rotation_angle, NULL,
         flip
@@ -106,3 +111,5 @@ int sprite_t::render(SDL_Renderer *dest)
 
     return result;
 }
+
+#endif

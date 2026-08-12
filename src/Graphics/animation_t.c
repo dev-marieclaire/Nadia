@@ -1,3 +1,8 @@
+
+#ifdef __DJGPP__
+
+#else
+
 #include <SDL2/SDL.h>
 
 #include "Graphics/animation_t.h"
@@ -39,3 +44,5 @@ bool update_animation(animation_t *animation, uint32_t delta_ms)
     animation->frame_index = animation->timer_ms / animation->delay_ms;
     return false;
 }
+
+#endif

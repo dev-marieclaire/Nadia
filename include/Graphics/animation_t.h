@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __DJGPP__
+
+#else
+
 typedef struct animation_t
 {
     uint32_t    duration_ms;
@@ -14,3 +18,5 @@ typedef struct animation_t
 
 extern animation_t *create_animation_t(uint32_t delay_ms, uint16_t total_frames, const char *name);
 extern bool update_animation(animation_t *animation, uint32_t delta_ms);
+
+#endif

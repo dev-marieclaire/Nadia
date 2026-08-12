@@ -1,3 +1,7 @@
+#ifdef __DJGPP__
+
+#else
+
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -25,3 +29,5 @@ void dt_delay(uint32_t elapsed_time, uint32_t ms_framerate_target)
     if (elapsed_time < ms_framerate_target)
         SDL_Delay(ms_framerate_target - elapsed_time);
 }
+
+#endif

@@ -1,4 +1,9 @@
 #pragma once
+
+#ifdef __DJGPP__
+
+#else
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -76,3 +81,5 @@ class sprite_t
     
         sprite_t(img_t *img, uint32_t w_px, uint32_t h_px);
 };
+
+#endif

@@ -1,8 +1,14 @@
-// img.cpp
+// img.c
+#include "Graphics/img_t.h"
+
+#ifdef __DJGPP__
+
+// BITMAP *load_img_data()
+
+#else
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
-#include "Graphics/img_t.h"
 
 img_t *create_img_t(SDL_Renderer *dest, const char *src, const char *name)
 {
@@ -16,15 +22,15 @@ img_t *create_img_t(SDL_Renderer *dest, const char *src, const char *name)
     if (name) img->name = string(name);
     else printf("Warning: No image name set.\n");
 
-    img->texture = load_img_data(src, dest);
-    if (!img->texture)
+    img->data = load_img_data(src, dest);
+    if (!img->data)
     {
         fprintf(stderr, "Failed to load texture for '%s': %s\n", name, SDL_GetError());
         free(img);
         return NULL;
     }
 
-    SDL_QueryTexture(img->texture, NULL, NULL, &img->w, &img->h);
+    SDL_QueryTexture(img->data, NULL, NULL, &img->w, &img->h);
     printf("'%s' dimensions: %dx%d\n", name, img->w, img->h);
 
     if (img) return img;
@@ -61,25 +67,10 @@ SDL_Texture *load_img_data(const char *src, SDL_Renderer *dest)
     return texture;
 }
 
-/* Unused
-bool clear_img(SDL_Texture *texture)
-{
-    if (texture) SDL_DestroyTexture(texture);
-    return (!texture) ? true : false;
-}
-
-bool reload(img_t *img, const char *src, SDL_Renderer *dest)
-{
-    if (clear_img(img->texture))
-        img->texture = load_img_data(src, dest);
-    return (img) ? true : false;
-}
-*/
-
-
-
 void free_img_t(img_t *img)
 {
-    if (img->texture) SDL_DestroyTexture(img->texture);
+    if (img->data) SDL_DestroyTexture(img->data);
     free(img);
 }
+
+#endif

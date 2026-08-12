@@ -1,28 +1,13 @@
 // init_window.c
 
+#ifdef __DJGPP__
+
+#else
+
 #include <SDL2/SDL.h>
 
 #include "defaults.h"
 #include "graphics.h"
-
-// Initializes a window with some default values and performs a checking
-SDL_Window *create_default_window(void)
-{
-    SDL_Window *win = SDL_CreateWindow(
-        DEFAULT_TITLE,
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // Position
-        DEFAULT_SCREEN_WIDTH,   DEFAULT_SCREEN_HEIGHT,  // Size
-        DEFAULT_WINFLAGS
-    );
-
-    if (!win)
-    {
-        printf("Failed to init window: %s\n", SDL_GetError());
-        exit(1);
-    }
-    
-    return win;
-}
 
 // Initializes a window with custom values and performs a checking
 SDL_Window *create_custom_window(const char *title, uint x, uint y, uint w, uint h, int flags)
@@ -60,3 +45,5 @@ SDL_Window *create_custom_window(const char *title, uint x, uint y, uint w, uint
     
     return win;
 }
+
+#endif
