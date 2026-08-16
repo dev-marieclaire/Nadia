@@ -23,20 +23,20 @@ config_t *load_default_configs()
     return configs;
 }
 
-config_t *set_configs(unsigned short int color_depth, screen_t *screen)
-{
-    config_t *configs = (config_t *) calloc(1, sizeof(config_t));
-    configs->color_depth = color_depth;
+// config_t *set_configs(unsigned short int color_depth, screen_t *screen)
+// {
+//     config_t *configs = (config_t *) calloc(1, sizeof(config_t));
+//     configs->color_depth = color_depth;
 
-    printf("Queried dimensions: %dx%d", configs->screen.w, configs->screen.h);
+//     printf("Queried dimensions: %dx%d", configs->screen.w, configs->screen.h);
 
-    screen->w = configs->screen.w;
-    screen->h = configs->screen.h;
-    screen->x = configs->screen.x;
-    screen->y = configs->screen.y;
+//     screen->w = configs->screen.w;
+//     screen->h = configs->screen.h;
+//     screen->x = configs->screen.x;
+//     screen->y = configs->screen.y;
 
-    return configs;
-}
+//     return configs;
+// }
 
 int config_screen_w(const config_t *cfg)
 { return get_screen_width(&cfg->screen); }

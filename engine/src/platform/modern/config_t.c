@@ -32,42 +32,22 @@ config_t *load_default_configs()
     return configs;
 }
 
-config_t *init_configs(unsigned int libflags, unsigned int winflags, unsigned int framebflags, screen_t *screen)
-{
-    config_t *configs = (config_t *) calloc(1, sizeof(config_t));
-    configs->libflags = DEFAULT_SDLFLAGS;
-    configs->libimageflags = DEFAULT_IMG_FLAGS;
-    configs->winflags = winflags;
-    configs->framebflags = framebflags;
+// config_t *init_configs(unsigned int libflags, unsigned int winflags, unsigned int framebflags, screen_t *screen)
+// {
+//     config_t *configs = (config_t *) calloc(1, sizeof(config_t));
+//     configs->libflags = DEFAULT_SDLFLAGS;
+//     configs->libimageflags = DEFAULT_IMG_FLAGS;
+//     configs->winflags = winflags;
+//     configs->framebflags = framebflags;
 
-    configs->screen.w = screen->w;
-    configs->screen.h = screen->h;
-    configs->screen.x = screen->x;
-    configs->screen.y = screen->y;
+//     configs->screen.w = screen->w;
+//     configs->screen.h = screen->h;
+//     configs->screen.x = screen->x;
+//     configs->screen.y = screen->y;
 
-    return configs;
-}
+//     return configs;
+// }
 
-void query_screen(config_t *src, screen_t *out)
-{
-    if (!out)
-    {
-        fprintf(stderr, ">> query_screen: out is null\n");
-        return;
-    }
-    if (src)
-    {
-        out->w = src->screen.w;
-        out->h = src->screen.h;
-        out->x = src->screen.x;
-        out->y = src->screen.y;
-    }
-    else
-    {
-        fprintf(stderr, ">> Nadia couldn't query screen because source is null.");
-        fflush(stderr);
-    }
-}
 
 unsigned int config_get_libflags(const config_t *cfg)
 { return cfg->libflags;}
