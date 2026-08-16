@@ -1,11 +1,13 @@
 #include <SDL2/SDL.h>
 
-#include "nadia.h"
-#include "config_t.h"
+#include "core/config_t.h"
+#include "graphics.h"
 
 struct config_t
 {
     unsigned int libflags;
+    unsigned int libimageflags;
+
     unsigned int winflags;
     unsigned int framebflags;
 
@@ -16,8 +18,9 @@ struct config_t
 
 config_t *load_default_configs()
 {
-    config_t *configs = calloc(1, sizeof(config_t));
+    config_t *configs = (config_t *) calloc(1, sizeof(config_t));
     configs->libflags = DEFAULT_SDLFLAGS;
+    configs->libimageflags = DEFAULT_IMG_FLAGS;
     configs->winflags = DEFAULT_WINFLAGS;
     configs->framebflags = DEFAULT_FRAMEB_FLAGS;
 
@@ -31,10 +34,11 @@ config_t *load_default_configs()
 
 config_t *init_configs(unsigned int libflags, unsigned int winflags, unsigned int framebflags, screen_t *screen)
 {
-    config_t *configs = calloc(1, sizeof(config_t));
+    config_t *configs = (config_t *) calloc(1, sizeof(config_t));
     configs->libflags = DEFAULT_SDLFLAGS;
-    configs->winflags = DEFAULT_WINFLAGS;
-    configs->framebflags = DEFAULT_FRAMEB_FLAGS;
+    configs->libimageflags = DEFAULT_IMG_FLAGS;
+    configs->winflags = winflags;
+    configs->framebflags = framebflags;
 
     configs->screen.w = screen->w;
     configs->screen.h = screen->h;
@@ -67,21 +71,18 @@ void query_screen(config_t *src, screen_t *out)
 
 unsigned int config_get_libflags(const config_t *cfg)
 { return cfg->libflags;}
+
+unsigned int config_get_libimageflags(const config_t *cfg)
+{ return cfg->libimageflags;}
+
 unsigned int config_get_winflags(const config_t *cfg)
-{
-    return cfg->winflags;
-}
+{ return cfg->winflags; }
+
 unsigned int config_get_framebflags(const config_t *cfg)
-{
-    return cfg->framebflags;
-}
+{ return cfg->framebflags; }
 
 int config_get_screen_w(const config_t *cfg)
-{
-    return cfg->screen.w;
-}
+{ return cfg->screen.w; }
 
 int config_get_screen_h(const config_t *cfg)
-{
-    return cfg->screen.h;
-}
+{ return cfg->screen.h; }

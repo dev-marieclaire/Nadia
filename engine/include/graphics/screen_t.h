@@ -9,4 +9,7 @@ typedef struct
     unsigned int x, y;
 } screen_t;
 
-#endif
+int get_screen_width(const screen_t *s);
+int get_screen_height(const screen_t *s);
+
+#endif // End of SCREEN_T_H.

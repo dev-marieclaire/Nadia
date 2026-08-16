@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "config_t.h"
-#include "nadia.h"
+#include "core/config_t.h"
+#include "graphics.h"
 
 struct config_t
 {
@@ -38,12 +38,8 @@ config_t *set_configs(unsigned short int color_depth, screen_t *screen)
     return configs;
 }
 
-void query_screen(config_t *src, screen_t *out)
-{
-    if (src) out = &src->screen;
-    else
-    {
-        fprintf(stderr, ">> Nadia couldn't query screen because source is null.");
-        fflush(stderr);
-    }
-}
+int config_screen_w(const config_t *cfg)
+{ return get_screen_width(&cfg->screen); }
+
+int config_screen_h(const config_t *cfg)
+{ return get_screen_height(&cfg->screen); }

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "delta_t.h"
+#include "core/delta_t.h"
 
 // Initializes delta_t variables.
 delta_t *create_delta_t(uint16_t framerate_target)

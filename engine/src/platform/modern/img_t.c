@@ -2,12 +2,12 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "Graphics/img_t.h"
+// #include "Graphics/img_t.h"
 
-struct img_t
-{
-    int w, h; // Saves the position and dimensions of the image.
-    SDL_Texture *data; // Image's data.
+// struct img_t
+// {
+//     int w, h; // Saves the position and dimensions of the image.
+//     SDL_Texture *data; // Image's data.
 
-    char *name; // Name of the image. Just in case.
-} img_t;
+//     char *name; // Name of the image. Just in case.
+// } img_t;

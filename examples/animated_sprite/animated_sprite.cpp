@@ -28,8 +28,6 @@
 int main(void)
 {
     if (allegro_init() != 0) return EXIT_FAILURE;
-    // return EXIT_SUCCESS;
-
     install_keyboard();
     // install_timer();
 

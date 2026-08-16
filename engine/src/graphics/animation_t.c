@@ -1,15 +1,11 @@
+// graphics/animations_t.c
+#include "graphics/animation_t.h"
 
-#ifdef __DJGPP__
+#include "core/strings.h"
+#include <stdlib.h>
+#include <stdio.h>
 
-#else
-
-#include <SDL2/SDL.h>
-
-#include "Graphics/animation_t.h"
-
-#include "strings.h"
-
-animation_t *create_animation_t(uint32_t delay_ms, uint16_t total_frames, const char *name)
+animation_t *create_animation_t(unsigned int delay_ms, unsigned short int total_frames, const char *name)
 {
     animation_t *animation = (animation_t *) malloc(sizeof(animation_t));
     if (!animation)
@@ -30,7 +26,7 @@ animation_t *create_animation_t(uint32_t delay_ms, uint16_t total_frames, const 
 }
 
 // Returns true when the animation reaches the end.
-bool update_animation(animation_t *animation, uint32_t delta_ms)
+bool update_animation(animation_t *animation, unsigned int delta_ms)
 {
     if (animation->total_frames <= 1) return true;
 
@@ -44,5 +40,3 @@ bool update_animation(animation_t *animation, uint32_t delta_ms)
     animation->frame_index = animation->timer_ms / animation->delay_ms;
     return false;
 }
-
-#endif

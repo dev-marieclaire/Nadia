@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 #include "nadia.h"
-#include "config_t.h"
 
 struct core_t
 {
@@ -19,11 +18,22 @@ core_t *nadia_init(config_t *configs)
     setbuf(stderr, NULL);
     setbuf(stdout, NULL);
 
-    fprintf(stderr, ">>> Nadia init <<\n");
-    fflush(stderr);
+    fprintf(stderr, "Nadia is starting...\n"); fflush(stderr);
     core_t *core = (core_t *) calloc(1, sizeof(core_t));
+    fprintf(stderr, ">> Nadia: Core allocation done.%p\n", (void*)core); fflush(stderr);
 
-    if (allegro_init() != 0) return NULL;
+    fprintf(stderr, ">> Nadia: Initializing Allegro.\n"); fflush(stderr);
+    if (allegro_init() != 0)
+    {
+        allegro_message("! Nadia failed: Couldn't initialize Allegro !\n%s", allegro_error);
+        free(core);
+        return NULL;
+    }
+    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
+
+    core->state = STATE_RUNNING;
+    fprintf(stderr, "Nadia is now running.\n\n"); fflush(stderr);
+
     return core;
 }
 
@@ -31,18 +41,12 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
 {
     if (title) c->title = title;
 
-    fprintf(stderr, ">>> Graphics init <<\n");
-    fflush(stderr);
+    fprintf(stderr, "Nadia is initializing the graphical environment...\n"); fflush(stderr);
     set_color_depth(8);
 
-    screen_t area;
-    // query_screen(configs, &screen);
-    area.w = DEFAULT_SCREEN_WIDTH;
-    area.h = DEFAULT_SCREEN_HEIGHT;
+    fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
 
-    printf("Resolution: %dx%d", area.w, area.h);
-
-    if (set_gfx_mode(GFX_AUTODETECT, area.w, area.h, 0, 0) != 0)
+    if (set_gfx_mode(GFX_AUTODETECT, config_screen_w(configs), config_screen_h(configs), 0, 0) != 0)
     {
         allegro_message("Error: %s\n", allegro_error);
         return false;
@@ -50,19 +54,21 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
 
     c->framebuffer = screen;
 
-    c->state = STATE_RUNNING;
+    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
+
+    fprintf(stderr, ">> Nadia: Graphical environment is now ready.\n"); fflush(stderr);
 
     return true;
 }
+
+int nadia_state(const core_t *c)
+{ return c->state; }
 
 void nadia_quit(core_t *c)
 {
     free(c);
     allegro_exit();
 }
-
-int nadia_state(const core_t *c)
-{ return c->state; }
 
 void nadia_poll_events(core_t *c)
 { (void) c; }

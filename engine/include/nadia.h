@@ -16,35 +16,26 @@
 #define STATE_INIT_FAILURE      0xFD
 #define STATE_RUNTIME_FAILURE   0xFF
 
-#define DEFAULT_SCREEN_WIDTH    320
-#define DEFAULT_SCREEN_HEIGHT   200
-
-#define DEFAULT_COLOR_DEPTH 8
-
 #define DEFAULT_TITLE   "APPLICATION"
 
-#ifdef __OLD__
-#else
-    #include <SDL2/SDL.h>
-
-    // Default flags required in modern systems.
-    #define DEFAULT_SDLFLAGS SDL_INIT_VIDEO | SDL_INIT_EVENTS
-    #define DEFAULT_WINFLAGS SDL_WINDOW_SHOWN
-    #define DEFAULT_FRAMEB_FLAGS SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-#endif
-
-#include "config_t.h"
+#include "core/config_t.h"
 #include <stdbool.h>
 
 typedef struct core_t core_t;
 
 core_t  *nadia_init(config_t *configs);
 bool    nadia_graphics_init(core_t *c, char *title, config_t *configs);
-void    nadia_quit(core_t *c);
 int     nadia_state(const core_t *c);
+void    nadia_quit(core_t *c);
+
+// Input
 void    nadia_poll_events(core_t *c);
+
+// Graphics
 void    nadia_clear_framebuffer(core_t *c, unsigned int color);
 void    nadia_present(core_t *c);
+
+// General
 void    nadia_await(unsigned int ms);
 void    nadia_await_seconds(float s);
 
