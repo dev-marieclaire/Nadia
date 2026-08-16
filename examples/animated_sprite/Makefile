@@ -3,12 +3,12 @@ ENGINE_SRC_DIR = ./../../src
 
 # BUILD DIRS
 BUILD_MODERN = ./build/modern
-BUILD_DOS = ./build/dos
+BUILD_OLD = ./build/dos
 
 ## Default target option:
 TARGET ?= MODERN
 
-ifeq ($(TARGET), DOS)
+ifeq ($(TARGET), OLD)
     DJGPP_GCC := $(shell which i586-pc-msdosdjgpp-g++ 2>/dev/null)
 
     ifeq ($(DJGPP_GCC),)
@@ -21,7 +21,7 @@ ifeq ($(TARGET), DOS)
 
 	CC		= $(DJGPP_GCC)
 	CFLAGS	= -I./../../include -I./../../include/allegro/include -D__DJGPP__
-	LDFLAGS	= -L./../../include/allegro/lib/djgpp -lalleg
+	LDFLAGS	= -L./../../engine/include/allegro/lib/djgpp -lalleg
 	EXT		= .exe
 	OBJDIR	= $(BUILD_DOS)
 	IMG		= *.bmp
