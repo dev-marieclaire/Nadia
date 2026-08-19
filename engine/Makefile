@@ -25,7 +25,7 @@ else
 endif
 
 CORE_SRC := $(wildcard $(ENGINE_ROOT)src/core/*.c)
-GRAPHICS_SRC := $(wildcard $(ENGINE_ROOT)src/graphics/*.c) $(wildcard $(ENGINE_ROOT)src/core/graphics/*.cpp)
+GRAPHICS_SRC := $(wildcard $(ENGINE_ROOT)src/graphics/*.c) $(wildcard $(ENGINE_ROOT)src/graphics/*.cpp)
 ALL_SRC  := $(CORE_SRC) $(GRAPHICS_SRC) $(PLATFORM_SRC)
 
 OBJDIR   := $(ENGINE_ROOT)build/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')

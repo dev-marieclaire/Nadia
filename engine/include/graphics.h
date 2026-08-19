@@ -6,10 +6,10 @@
 #include "graphics/img_t.h"
 #include "graphics/sprite_t.h"
 #include "graphics/animation_t.h"
-#include "graphics/screen_t.h"
+#include "graphics/display_t.h"
 
-#define DEFAULT_SCREEN_WIDTH    320
-#define DEFAULT_SCREEN_HEIGHT   200
+#define DEFAULT_DISPLAY_WIDTH    320
+#define DEFAULT_DISPLAY_HEIGHT   200
 
 #define DEFAULT_COLOR_DEPTH 8
 

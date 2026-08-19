@@ -1,27 +1,23 @@
-#ifdef __DJGPP__
-
-#else
-
-#include <SDL2/SDL.h>
+#include <time.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "core/delta_t.h"
+#include "core/delta.h"
 
-// Initializes delta_t variables.
-delta_t *create_delta_t(uint16_t framerate_target)
+struct delta_t
 {
-    delta_t *delta = (delta_t *) malloc(sizeof(delta_t));
-    if (!delta) return NULL;
+    unsigned int    start;  // Starting value.
+    unsigned int    end;    // Ending value.
 
-    memset(delta, 0, sizeof(delta_t));
+    unsigned int    elapsed;    // Stores the difference between the start and end.
 
-    delta->framerate_target = framerate_target;
-    delta->ms_framerate_target = 1000 / framerate_target;
-    delta->previous_time_ms = SDL_GetTicks();
+    unsigned int    current;    // Current delta value.
+    unsigned int    previous;   // Previous delta value.
+};
 
-    return delta;
-}
+// Stores the elapsed time in miliseconds since the program's execution.
+unsigned int delta_store_time(void)
+{ return (unsigned int) clock() / CLOCKS_PER_SEC; }
 
 // Delays the application in case the elapsed time is lower than the framerate target in ms.
 void dt_delay(uint32_t elapsed_time, uint32_t ms_framerate_target)
@@ -29,5 +25,3 @@ void dt_delay(uint32_t elapsed_time, uint32_t ms_framerate_target)
     if (elapsed_time < ms_framerate_target)
         SDL_Delay(ms_framerate_target - elapsed_time);
 }
-
-#endif

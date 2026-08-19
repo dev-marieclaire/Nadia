@@ -9,8 +9,7 @@ int main()
     config_t *configs = load_default_configs();
 
     core_t *application = nadia_init(configs);
-    if (!application
-        || !nadia_graphics_init(application, "COMPAT", configs))
+    if (!application || !nadia_graphics_init(application, "COMPAT", configs))
         return EXIT_FAILURE;
 
     while (nadia_state(application) == STATE_RUNNING)

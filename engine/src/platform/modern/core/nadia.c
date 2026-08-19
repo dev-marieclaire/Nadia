@@ -19,6 +19,12 @@ core_t *nadia_init(config_t *configs)
 {
     fprintf(stderr, "Nadia is starting...\n"); fflush(stderr);
 
+    if (!configs)
+    {
+        fprintf(stderr, "!! Nadia failed: configs pointer is null. !!\n");
+        return false;
+    }
+
     core_t *core = (core_t *) calloc(1, sizeof(core_t));
     fprintf(stderr, ">> Nadia: Core allocation done.%p\n", (void*)core); fflush(stderr);
 
@@ -53,15 +59,15 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
         return false;
     }
 
-    fprintf(stderr, ">> Nadia: Creating screen.\n"); fflush(stderr);
-    screen_t screen;
-    query_screen(configs, &screen);
+    fprintf(stderr, ">> Nadia: Creating display.\n"); fflush(stderr);
+    display_t display;
+    query_display(configs, &display);
     fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Creating window.\n"); fflush(stderr);
 
     c->window = create_window(
-        title, &screen,
+        title, &display,
         config_get_winflags(configs)
     );
 

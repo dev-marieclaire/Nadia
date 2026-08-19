@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 // Initializes a window with custom values and performs a checking.
-SDL_Window *create_window(const char *title, screen_t *area, unsigned int flags)
+SDL_Window *create_window(const char *title, display_t *area, unsigned int flags)
 {
     fprintf(stderr, ">> Nadia:\n    Requested window values: title=%s x=%u y=%u w=%u h=%u flags=%u\n",
             title ? title : "(null)", area->x, area->y, area->w, area->h, flags);
@@ -28,12 +28,12 @@ SDL_Window *create_window(const char *title, screen_t *area, unsigned int flags)
     if (area->w == 0)
     {
         fprintf(stderr, "## Nadia warning: Missing initial width for window. Using default. ##\n");
-        area->w = DEFAULT_SCREEN_WIDTH;
+        area->w = DEFAULT_DISPLAY_WIDTH;
     }
     if (area->h == 0)
     {
         fprintf(stderr, "## Nadia warning: Missing initial height for window. Using default. ##\n");
-        area->h = DEFAULT_SCREEN_HEIGHT;
+        area->h = DEFAULT_DISPLAY_HEIGHT;
     }
     if (flags == 0)
     {
@@ -45,7 +45,8 @@ SDL_Window *create_window(const char *title, screen_t *area, unsigned int flags)
     fprintf(stderr, ">> Nadia: window allocated at %p\n", (void*)win);
     fflush(stderr);
 
-    if (!win) {
+    if (!win)
+    {
         fprintf(stderr, "! Nadia failed: Couldn't create window !\n%s", SDL_GetError());
         fflush(stderr);
         return NULL;
