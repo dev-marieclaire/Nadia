@@ -18,7 +18,9 @@
 
 #define DEFAULT_TITLE   "APPLICATION"
 
-#include "core/config_t.h"
+#include "core/config.h"
+#include "core/delta.h"
+#include "core/strings.h"
 #include <stdbool.h>
 
 typedef struct core_t core_t;

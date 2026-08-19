@@ -1,20 +1,21 @@
-SRCDIR = ../../src/
-SRC = $(SRCDIR)**/*.cpp $(SRCDIR)*.c $(SRCDIR)**/*.c ./*.cpp
-INCLUDE = -I../../include/
-BUILD = ./build
-OUT = $(BUILD)/sprite
-LFLAGS = `pkg-config --cflags --libs sdl2 SDL2_image`
+include ../../engine/Makefile
 
-all: compile
+NAME    = sprite
+SRC     = $(NAME).c
+OBJDIR  = build/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+BIN     = $(OBJDIR)/$(NAME)$(EXT)
+# LIB_NAME = nadia_platform_$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]').a
 
-clean:
-	rm -fr ./{build,src}/*.o
+.PHONY: all clean-example
 
-compile:
-	mkdir -p $(BUILD)
-	cp *.bmp $(BUILD)
+all: engine $(BIN)
 
-	g++ $(SRC) $(INCLUDE) -g -o $(OUT) $(LFLAGS)
+engine:
+	$(MAKE) -C ../../engine all TARGET=$(TARGET)
 
-run:
-	cd ./build && ./sprite
+$(BIN): $(SRC)
+	@mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -L../../engine/lib -l$(LIB_NAME)
+
+clean: clean-example
+	rm -rf $(OBJDIR)

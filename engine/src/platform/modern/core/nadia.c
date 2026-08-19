@@ -148,6 +148,3 @@ void nadia_await(unsigned int ms)
 
 void nadia_await_seconds(float s)
 { SDL_Delay(s * 1000); }
-
-
-

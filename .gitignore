@@ -60,3 +60,17 @@ examples/compat/build/modern/compat
 examples/compat/build/old/compat
 examples/compat/build/old/compat.exe
 examples/compat/build/old/CWSDPMI.EXE
+engine/build/core/delta_t.o
+engine/build/core/delta.o
+engine/build/core/input.o
+engine/build/core/strings.o
+engine/build/graphics/animation_t.o
+engine/build/graphics/animation.o
+engine/build/graphics/display_t.o
+engine/build/modern/core/delta.o
+engine/build/modern/graphics/animation.o
+engine/build/modern/graphics/display_t.o
+engine/build/old/graphics/display_t.o
+engine/build/platform/modern/window.o
+engine/lib/libnadia_platform_modern.a
+examples/sprite/_platform_modern.a
