@@ -1,5 +1,6 @@
-NADIA_ROOTDIR	:= $(realpath ../../engine)
+TARGET	?= MODERN
 
+NADIA_ROOTDIR	:= $(realpath ../../engine)
 include ../../engine/platform_config.mk
 
 NAME	= compat
@@ -8,11 +9,9 @@ SRC	= $(NAME).c
 OBJDIR	= build/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
 BIN	= $(OBJDIR)/$(NAME)$(EXT)
 
-TARGET	?= MODERN
-
 .PHONY: all clean engine
 
-all: $(BIN)
+all: engine $(BIN)
 
 engine:
 	$(MAKE) -C $(NADIA_ROOTDIR) all TARGET=$(TARGET)
@@ -23,3 +22,4 @@ $(BIN): $(SRC)
 
 clean:
 	rm -rf $(OBJDIR)
+
