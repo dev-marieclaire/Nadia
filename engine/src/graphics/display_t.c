@@ -1,6 +1,6 @@
 // graphics/display.c
 
-#include "graphics/display_t.h"
+#include "graphics/display.h"
 
 int display_get_width(const display_t *s)
 { return s->w; }

@@ -1,8 +1,8 @@
 // modern/nadia.c
 #include <SDL2/SDL.h>
 
-#include "nadia.h"
-#include "window.h"
+#include <nadia.h>
+#include <window.h>
 
 struct core_t
 {
@@ -22,14 +22,14 @@ core_t *nadia_init(config_t *configs)
     if (!configs)
     {
         fprintf(stderr, "!! Nadia failed: configs pointer is null. !!\n");
-        return false;
+        return NULL;
     }
 
     core_t *core = (core_t *) calloc(1, sizeof(core_t));
     fprintf(stderr, ">> Nadia: Core allocation done.%p\n", (void*)core); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Initializing SDL.\n"); fflush(stderr);
-    if (SDL_Init(config_get_libflags(configs)) < 0)
+    if (SDL_Init(configure_get_libraryflags(configs)) < 0)
     {
         fprintf(stderr, "! Nadia failed: Couldn't initialize SDL !\n%s", SDL_GetError()); fflush(stderr);
         free(core);
@@ -61,14 +61,17 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
 
     fprintf(stderr, ">> Nadia: Creating display.\n"); fflush(stderr);
     display_t display;
-    query_display(configs, &display);
+
+    display.w = configure_get_display_w(configs);
+    display.h = configure_get_display_h(configs);
+    
     fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Creating window.\n"); fflush(stderr);
 
     c->window = create_window(
         title, &display,
-        config_get_winflags(configs)
+        configure_get_windowflags(configs)
     );
 
     if (!c->window)
@@ -82,7 +85,7 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
     fprintf(stderr, ">> Nadia: sucess\n"); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
-    c->framebuffer = SDL_CreateRenderer(c->window, -1, config_get_framebflags(configs));
+    c->framebuffer = SDL_CreateRenderer(c->window, -1, configure_get_framebufferflags(configs));
     if (!c->framebuffer)
     {
         fprintf(stderr, "!! Nadia failed: %s !!\n", SDL_GetError());
@@ -95,8 +98,8 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
 
 
     fprintf(stderr, ">> Nadia: Initializing SDL image.\n"); fflush(stderr);
-    int img_initted = IMG_Init(config_get_libimageflags(configs));
-    if(img_initted & config_get_libimageflags(configs) != config_get_libimageflags(configs))
+    int img_initted = IMG_Init(configure_get_image_libraryflags(configs));
+    if(img_initted & configure_get_image_libraryflags(configs) != configure_get_image_libraryflags(configs))
     {
         printf("IMG_Init: Failed to init required jpg and png support!\n");
         printf("IMG_Init: %s\n", IMG_GetError());

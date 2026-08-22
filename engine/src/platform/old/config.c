@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "core/config_t.h"
-#include "graphics.h"
+#include <core/config.h>
+#include <graphics.h>
 
 struct config_t
 {
@@ -16,11 +16,11 @@ config_t *load_default_configs()
     config_t *configs = (config_t *) calloc(1, sizeof(config_t));
     configure_set_colordepth(configs, DEFAULT_COLOR_DEPTH);
 
-    display_t display;
+    display_t display =
     {
         .w = DEFAULT_DISPLAY_WIDTH,
         .h = DEFAULT_DISPLAY_HEIGHT,
-        .x = .y = 0
+        .x = 0, .y = 0
     };
 
     configure_set_display(configs, &display);
@@ -44,26 +44,26 @@ config_t *load_default_configs()
 // }
 
 // Setter zone
-void configure_set_libraryflags(config_t *configs, const unsigned int *libflags)
-{ configs->libflags = libflags; }
+// void configure_set_libraryflags(config_t *configs, const unsigned int libflags)
+// { configs->libflags = libflags; }
 
 void configure_set_colordepth(config_t *configs, const unsigned short int color_depth)
 { configs->color_depth = color_depth; }
 
-void configure_set_framebufferflags(config_t *configs, const unsigned int *framebflags)
-{ configs->framebflags = framebflags; }
+// void configure_set_framebufferflags(config_t *configs, const unsigned int framebflags)
+// { configs->framebflags = framebflags; }
 
 void configure_set_display(config_t *configs, const display_t *display)
-{ display = configs->display; }
+{ configs->display = *display; }
 
 // Getter zone
-unsigned int configure_get_libflags(const config_t *configs)
-{ return configs->libflags;}
+// unsigned int configure_get_libflags(const config_t *configs)
+// { return configs->libflags;}
 
-void configure_get_colordepth(config_t *configs)
+unsigned short int configure_get_colordepth(config_t *configs)
 { return configs->color_depth; }
 
-display_t *configure_get_display(const config_t *configs)
+display_t *configure_get_display(config_t *configs)
 { return &configs->display; }
 
 int configure_get_display_w(const config_t *configs)

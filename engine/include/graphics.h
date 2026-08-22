@@ -6,7 +6,7 @@
 #include "graphics/img_t.h"
 #include "graphics/sprite_t.h"
 #include "graphics/animation_t.h"
-#include "graphics/display_t.h"
+#include "graphics/display.h"
 
 #define DEFAULT_DISPLAY_WIDTH    320
 #define DEFAULT_DISPLAY_HEIGHT   200

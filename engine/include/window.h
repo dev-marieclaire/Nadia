@@ -1,8 +1,5 @@
 #pragma once
 
-#ifdef __MODERN__
-
+#include "graphics/display.h"
 #include <SDL2/SDL.h>
-extern SDL_Window *create_window(const char *title, screen_t *area, unsigned int flags);
-
-#endif
+SDL_Window *create_window(const char *title, display_t *area, unsigned int flags);

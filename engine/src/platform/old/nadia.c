@@ -2,7 +2,7 @@
 #include <allegro.h>
 #include <stdio.h>
 
-#include "nadia.h"
+#include <nadia.h>
 
 struct core_t
 {
@@ -46,7 +46,7 @@ bool nadia_graphics_init(core_t *c, char *title, config_t *configs)
 
     fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
 
-    if (set_gfx_mode(GFX_AUTODETECT, config_screen_w(configs), config_screen_h(configs), 0, 0) != 0)
+    if (set_gfx_mode(GFX_AUTODETECT, configure_get_display_w(configs), configure_get_display_h(configs), 0, 0) != 0)
     {
         allegro_message("Error: %s\n", allegro_error);
         return false;

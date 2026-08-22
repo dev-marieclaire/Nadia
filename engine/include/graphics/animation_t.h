@@ -3,6 +3,8 @@
 #ifndef ANIMATION_T_H
 #define ANIMATION_T_H
 
+#include <stdbool.h>
+
 typedef struct animation_t
 {
     unsigned int    duration_ms;
