@@ -29,7 +29,7 @@ int main(void)
         nadia_clear_framebuffer(application, 0xFFF4F4F4);
         nadia_present(application);
 
-        delta_time.end = delta_store_time();
+        // delta_time.end = delta_store_time();
         delta_time.current = (delta_time.end - delta_time.start) / FPS_TARGET_MS;
 
         if (delta_time.current < FPS_TARGET_MS)
