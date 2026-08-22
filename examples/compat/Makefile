@@ -1,20 +1,25 @@
-include ../../engine/Makefile
+NADIA_ROOTDIR	:= $(realpath ../../engine)
 
-NAME    = compat
-SRC     = compat.c
-OBJDIR  = build/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
-BIN     = $(OBJDIR)/$(NAME)$(EXT)
+include ../../engine/platform_config.mk
 
-.PHONY: all clean-example
+NAME	= compat
+INCDIR	= $(NADIA_ROOTDIR)/include
+SRC	= $(NAME).c
+OBJDIR	= build/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+BIN	= $(OBJDIR)/$(NAME)$(EXT)
 
-all: engine $(BIN)
+TARGET	?= MODERN
+
+.PHONY: all clean engine
+
+all: $(BIN)
 
 engine:
-	$(MAKE) -C ../../engine all TARGET=$(TARGET)
+	$(MAKE) -C $(NADIA_ROOTDIR) all TARGET=$(TARGET)
 
 $(BIN): $(SRC)
 	@mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) -o $@ $< -lengine_$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]') $(LDFLAGS) -L../../engine/lib
+	$(CC) $(CFLAGS) -o $@ $< -I$(INCDIR) -L$(NADIA_ROOTDIR)/build -lnadia_platform_$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]') $(LDFLAGS)
 
-clean: clean-example
+clean:
 	rm -rf $(OBJDIR)
