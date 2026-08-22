@@ -74,3 +74,13 @@ engine/build/old/graphics/display_t.o
 engine/build/platform/modern/window.o
 engine/lib/libnadia_platform_modern.a
 examples/sprite/_platform_modern.a
+engine/build/libnadia_platform_modern.a
+engine/build/libnadia_platform_old.a
+engine/build/obj/modern/core/delta.o
+engine/build/obj/modern/core/input.o
+engine/build/obj/modern/core/strings.o
+engine/build/obj/old/core/delta.o
+engine/build/obj/old/core/input.o
+engine/build/obj/old/core/strings.o
+examples/compat/build/libnadia_platform_modern.a
+examples/compat/build/libnadia_platform_old.a
