@@ -25,4 +25,20 @@
     #define DEFAULT_IMG_FLAGS IMG_INIT_JPG | IMG_INIT_PNG
 #endif
 
+struct framebuffer_t
+{
+    int     width, height;
+    void    *handler;   // Either SDL_Texture or BITMAP.
+    void    *render;    // Either SDL_Renderer or Allegro's "screen".
+}
+
+struct graphics_t
+{
+    void    *container; // Either SDL_Window or NULL.
+    void    *render_state;
+    framebuffer_t   *framebuffer;
+};
+
+bool nadia_graphics_init(graphics_t *g, config_t *configs)
+
 #endif
