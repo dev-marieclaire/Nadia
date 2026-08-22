@@ -1,4 +1,4 @@
-// core.h
+// nadia.h
 
 // This file declares the structure that holds the core elements of an application
 // and some default init values. A window pointer, a framebuffer pointer, an event

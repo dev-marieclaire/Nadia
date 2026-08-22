@@ -1,6 +1,6 @@
 // core/delta.c
 
-#include <core/delta.h>
+#include "core/delta.h"
 
 #include <time.h>
 #include <stdlib.h>

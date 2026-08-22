@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "nadia.h"
-#include "graphics.h"
+#include <nadia.h>
+#include <graphics.h>
 
 int main()
 {
