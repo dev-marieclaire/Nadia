@@ -84,3 +84,16 @@ engine/build/obj/old/core/input.o
 engine/build/obj/old/core/strings.o
 examples/compat/build/libnadia_platform_modern.a
 examples/compat/build/libnadia_platform_old.a
+engine/build/obj/modern/graphics/animation.o
+engine/build/obj/modern/graphics/display_t.o
+engine/build/obj/modern/graphics/sprite_t.o
+engine/build/obj/modern/platform/modern/window.o
+engine/build/obj/modern/platform/modern/core/config.o
+engine/build/obj/modern/platform/modern/core/nadia.o
+engine/build/obj/modern/platform/modern/graphics/img_t.o
+engine/build/obj/old/graphics/animation.o
+engine/build/obj/old/graphics/display_t.o
+engine/build/obj/old/graphics/sprite_t.o
+engine/build/obj/old/platform/old/config.o
+engine/build/obj/old/platform/old/nadia.o
+examples/compat/build/old/CWSDPMI.SWP
