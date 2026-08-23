@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <core/config.h>
+#include <platform/config.h>
 #include <graphics.h>
 
 struct config_t

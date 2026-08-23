@@ -3,20 +3,19 @@
 #ifndef CONFIG_T_H
 #define CONFIG_T_H
 
-#include <graphics.h>
+#include <display.h>
 
 typedef struct config_t config_t;
 
 extern config_t *load_default_configs();
 // extern config_t *init_configs(unsigned int flags, unsigned int framebflags, screen_t *screen);
-//
 
 void configure_set_libraryflags(config_t *configs, const unsigned int libflags);
 void configure_set_image_libraryflags(config_t *configs, const unsigned int libimageflags);
 void configure_set_windowflags(config_t *configs, const unsigned int winflags);
 void configure_set_framebufferflags(config_t *configs, const unsigned int framebflags);
 
-void configure_set_colordepth(config_t *configs, const unsigned short int colordepth);
+void configure_set_colordepth(config_t *configs, const unsigned short int color_depth);
 
 void configure_set_display(config_t *configs, const display_t *display);
 
@@ -29,5 +28,7 @@ unsigned short int configure_get_colordepth(config_t *configs);
 
 int configure_get_display_w(const config_t *cfg);
 int configure_get_display_h(const config_t *cfg);
+
+char *configure_get_title(const config_t *configs);
 
 #endif // End of CONFIG_T_H

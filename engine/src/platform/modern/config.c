@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 
-#include <core/config.h>
+#include <platform/config.h>
 #include <graphics.h>
 
 struct config_t
@@ -14,6 +14,8 @@ struct config_t
     unsigned short int color_depth;
 
     display_t display;
+
+    char *title;
 };
 
 config_t *load_default_configs()
@@ -77,3 +79,6 @@ int configure_get_display_w(const config_t *configs)
 
 int configure_get_display_h(const config_t *configs)
 { return configs->display.h; }
+
+char *configure_get_title(const config_t *configs)
+{ return configs->title;}

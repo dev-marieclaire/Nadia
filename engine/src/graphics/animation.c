@@ -1,7 +1,7 @@
 // graphics/animations_t.c
-#include "graphics/animation_t.h"
+#include <graphics/animation.h>
 
-#include "core/strings.h"
+#include "strings.h"
 #include <stdlib.h>
 #include <stdio.h>
 

@@ -18,24 +18,19 @@
 
 #define DEFAULT_TITLE   "APPLICATION"
 
-#include "core/config.h"
-#include "core/delta.h"
-#include "core/strings.h"
+#include <platform/config.h>
+#include <delta.h>
+#include "strings.h"
 #include <stdbool.h>
 
 typedef struct core_t core_t;
 
 core_t  *nadia_init(config_t *configs);
-bool    nadia_graphics_init(core_t *c, char *title, config_t *configs);
 int     nadia_state(const core_t *c);
 void    nadia_quit(core_t *c);
 
 // Input
 void    nadia_poll_events(core_t *c);
-
-// Graphics
-void    nadia_clear_framebuffer(core_t *c, unsigned int color);
-void    nadia_present(core_t *c);
 
 // General
 void    nadia_await(unsigned int ms);

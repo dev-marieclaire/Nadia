@@ -3,18 +3,20 @@
 #ifndef graphics_H
 #define graphics_H
 
-#include "graphics/img_t.h"
-#include "graphics/sprite_t.h"
-#include "graphics/animation_t.h"
-#include "graphics/display.h"
+#include <platform/config.h>
+#include <platform/img.h>
+
+#include <graphics/sprite.h>
+#include <graphics/animation.h>
+
+#include <display.h>
 
 #define DEFAULT_DISPLAY_WIDTH    320
 #define DEFAULT_DISPLAY_HEIGHT   200
 
 #define DEFAULT_COLOR_DEPTH 8
 
-#ifdef __OLD__
-#else
+#ifdef __MODERN__
     #include <SDL2/SDL.h>
     #include <SDL2/SDL_image.h>
 
@@ -25,20 +27,27 @@
     #define DEFAULT_IMG_FLAGS IMG_INIT_JPG | IMG_INIT_PNG
 #endif
 
-struct framebuffer_t
-{
-    int     width, height;
-    void    *handler;   // Either SDL_Texture or BITMAP.
-    void    *render;    // Either SDL_Renderer or Allegro's "screen".
-}
+typedef void *nadia_texture_t;  // Either *SDL_Texture or *BITMAP.
+typedef void *nadia_renderer_t; // Either SDL_Renderer or Allegro's "screen".
+typedef void *nadia_window_t;   // Either SDL_Window or NULL.
 
-struct graphics_t
+typedef struct
 {
-    void    *container; // Either SDL_Window or NULL.
-    void    *render_state;
-    framebuffer_t   *framebuffer;
-};
+    int width, height;
+    nadia_texture_t data;
+} nadia_framebuffer_t;
 
-bool nadia_graphics_init(graphics_t *g, config_t *configs)
+typedef struct
+{
+    nadia_window_t      window; 
+    nadia_renderer_t    renderer;
+    nadia_framebuffer_t framebuffer;
+} nadia_graphics_t;
+
+nadia_graphics_t *nadia_graphics_init(config_t *configs);
+void nadia_graphics_quit(nadia_graphics_t *ctx);
+
+void nadia_clear_display(nadia_graphics_t *ctx, unsigned int color);
+void nadia_graphics_present(nadia_graphics_t *ctx);
 
 #endif

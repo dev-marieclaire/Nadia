@@ -3,9 +3,9 @@ ifeq ($(TARGET),OLD)
 	DJGPP_PREFIX ?= /usr/local/djgpp
 	CC	:= $(DJGPP_PREFIX)/bin/i586-pc-msdosdjgpp-gcc
 	CXX	:= $(DJGPP_PREFIX)/bin/i586-pc-msdosdjgpp-g++
-	CFLAGS	= -I$(INCDIR) -D__OLD__ -DALLEGRO_NO_MAGIC_MAIN
+	CFLAGS	= -I$(INCDIR) -D__OLD__ -DALLEGRO_NO_MAGIC_MAIN -O2
 	CXXFLAGS = $(CFLAGS)
-	LDFLAGS	= -L$(NADIA_ROOTDIR)/../lib/allegro/djgpp -lalleg
+	LDFLAGS	= -L$(NADIA_ROOTDIR)/../lib/allegro/djgpp -lalleg -Wl,--allow-multiple-definition
 	PLATFORM_SRC := $(shell find $(SRCDIR)/platform/old -type f \( -name "*.c" -o -name "*.cpp" \))
 endif
 
