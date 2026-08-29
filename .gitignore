@@ -99,3 +99,8 @@ engine/build/obj/old/platform/old/nadia.o
 examples/compat/build/old/CWSDPMI.SWP
 engine/build/obj/old/graphics/sprite.o
 engine/build/obj/old/platform/old/graphics.o
+engine/build/obj/modern/graphics/sprite.o
+engine/build/obj/modern/platform/modern/config.o
+engine/build/obj/modern/platform/modern/graphics.o
+engine/build/obj/modern/platform/modern/img.o
+engine/build/obj/modern/platform/modern/nadia.o
