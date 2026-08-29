@@ -55,7 +55,7 @@ void configure_set_framebufferflags(config_t *configs, const unsigned int frameb
 void configure_set_display(config_t *configs, const display_t *display)
 { configs->display = *display; }
 
-void configure_set_colordepth(config_t *configs, const int colordepth)
+void configure_set_colordepth(config_t *configs, const short unsigned int colordepth)
 { configs->color_depth = colordepth; }
 
 // Getter zone

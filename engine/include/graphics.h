@@ -39,7 +39,7 @@ typedef struct
 
 typedef struct
 {
-    nadia_window_t      window; 
+    nadia_window_t      window;
     nadia_renderer_t    renderer;
     nadia_framebuffer_t framebuffer;
 } nadia_graphics_t;
