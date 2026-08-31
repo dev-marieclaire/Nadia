@@ -6,7 +6,7 @@ ifeq ($(TARGET),OLD)
 	CFLAGS	= -I$(INCDIR) -D__OLD__ -DALLEGRO_NO_MAGIC_MAIN -O2
 	CXXFLAGS = $(CFLAGS)
 	LDFLAGS	= -L$(NADIA_ROOTDIR)/../lib/allegro/djgpp -lalleg -Wl,--allow-multiple-definition
-	PLATFORM_SRC := $(shell find $(SRCDIR)/platform/old -type f \( -name "*.c" -o -name "*.cpp" \))
+	PLATFORM_SRC = $(shell find $(SRCDIR)/platform/old -type f \( -name "*.c" -o -name "*.cpp" \))
 endif
 
 ifeq ($(TARGET),MODERN)
@@ -15,5 +15,5 @@ ifeq ($(TARGET),MODERN)
 	CFLAGS	= -I$(INCDIR) -D__MODERN__ `sdl2-config --cflags`
 	CXXFLAGS = $(CFLAGS)
 	LDFLAGS	= `sdl2-config --libs` -lSDL2_image -lSDL2_ttf -lm
-	PLATFORM_SRC := $(shell find $(SRCDIR)/platform/modern -type f \( -name "*.c" -o -name "*.cpp" \))
+	PLATFORM_SRC = $(shell find $(SRCDIR)/platform/modern -type f \( -name "*.c" -o -name "*.cpp" \))
 endif

@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 
 #include "nadia.h"
-#include "graphics.h"
+#include <graphics/graphics.h>
 
 #include <stdio.h>
 #include <stdlib.h>

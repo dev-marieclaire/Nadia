@@ -1,4 +1,4 @@
-#include <graphics.h>
+#include <graphics/graphics.h>
 
 // sprite_t::sprite_t(img_t *img, uint32_t w_px, uint32_t h_px)
 // {

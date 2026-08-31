@@ -1,4 +1,4 @@
-NADIA_ROOTDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+NADIA_ROOTDIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 INCDIR = $(NADIA_ROOTDIR)include
 SRCDIR = $(NADIA_ROOTDIR)src
@@ -11,7 +11,7 @@ TARGET	?= MODERN
 
 include platform_config.mk
 
-CORE_SRC	:= $(wildcard $(SRCDIR)/core/*.c)
+CORE_SRC	:= $(wildcard $(SRCDIR)/common/*.c)
 GRAPHICS_SRC	:= $(wildcard $(SRCDIR)/graphics/*.c) $(wildcard $(SRCDIR)/graphics/*.cpp)
 
 BUILDDIR	= $(NADIA_ROOTDIR)build

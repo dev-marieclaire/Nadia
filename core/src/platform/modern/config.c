@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 
 #include <platform/config.h>
-#include <graphics.h>
+#include <graphics/graphics.h>
 
 struct config_t
 {

@@ -3,7 +3,7 @@
 #include <allegro.h>
 
 #include <nadia.h>
-#include <graphics.h>
+#include <graphics/graphics.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +29,8 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
     set_color_depth(configure_get_colordepth(configs));
 
     fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
+
+    g->renderer = NULL;
 
     if (set_gfx_mode(GFX_AUTODETECT, configure_get_display_w(configs), configure_get_display_h(configs), 0, 0) != 0)
     {
@@ -58,4 +60,8 @@ void nadia_graphics_present(nadia_graphics_t *ctx)
 { screen = ctx->framebuffer.data; }
 
 void nadia_graphics_quit(nadia_graphics_t *ctx)
-{ free(ctx); }
+{
+    // set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+    // readkey();
+    free(ctx);
+}

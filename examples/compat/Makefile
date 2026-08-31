@@ -1,7 +1,7 @@
 TARGET	?= MODERN
 
-NADIA_ROOTDIR	:= $(realpath ../../engine)
-include ../../engine/platform_config.mk
+NADIA_ROOTDIR	:= $(realpath ../../core)
+include ../../core/platform_config.mk
 
 NAME	= compat
 INCDIR	= $(NADIA_ROOTDIR)/include

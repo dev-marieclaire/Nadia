@@ -1,10 +1,9 @@
 #pragma once
 
-#ifndef graphics_H
-#define graphics_H
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 
 #include <platform/config.h>
-#include <platform/img.h>
 
 #include <graphics/sprite.h>
 #include <graphics/animation.h>
@@ -14,7 +13,7 @@
 #define DEFAULT_DISPLAY_WIDTH    320
 #define DEFAULT_DISPLAY_HEIGHT   200
 
-#define DEFAULT_COLOR_DEPTH 8
+#define DEFAULT_COLOR_DEPTH 32
 
 #ifdef __MODERN__
     #include <SDL2/SDL.h>

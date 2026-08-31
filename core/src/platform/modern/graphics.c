@@ -1,7 +1,7 @@
 // platform/modern/graphics.c
 
 #include <nadia.h>
-#include <graphics.h>
+#include <graphics/graphics.h>
 #include <platform/window.h>
 
 nadia_graphics_t *nadia_graphics_init(config_t *configs)
