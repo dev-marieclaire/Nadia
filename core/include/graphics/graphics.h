@@ -13,7 +13,7 @@
 #define DEFAULT_DISPLAY_WIDTH    320
 #define DEFAULT_DISPLAY_HEIGHT   200
 
-#define DEFAULT_COLOR_DEPTH 32
+#define DEFAULT_COLOR_DEPTH 24
 
 #ifdef __MODERN__
     #include <SDL2/SDL.h>

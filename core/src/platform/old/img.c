@@ -10,16 +10,18 @@ image_data_t load_image_data(const char *src, nadia_renderer_t dest)
 {
     (void) dest;
 
-    // PALETTE pal;
+    fprintf(stderr, "DEBUG: load_image_data('%s') color_depth=%d\n",
+            src ? src : "(null)", get_color_depth());
 
     BITMAP *data = load_bitmap(src, NULL);
+    fprintf(stderr, "DEBUG: load_bitmap returned %p\n", (void *)data);
 
     if (!data)
     {
-        printf("Couldn't load BITMAP.");
+        fprintf(stderr, "FAIL: Couldn't load BITMAP '%s'. allegro_error='%s'\n",
+                src, allegro_error);
         return NULL;
     }
-    // else set_palette(pal);
 
     return (image_data_t) data;
 }
@@ -47,28 +49,29 @@ img_t *create_image(nadia_renderer_t dest, const char *src, const char *name)
 
     img->w = ((BITMAP *) data)->w;
     img->h = ((BITMAP *) data)->h;
-    img->name = NULL;
+    img->name = name;
 
     return img;
 }
 
 int nadia_blit_image(img_t *image, nadia_graphics_t *graphics)
 {
-    printf("DEBUG: image=%p texture=%p graphics=%p\n",
+    allegro_message("DEBUG: image=%p texture=%p graphics=%p\n",
        (void *)image,
         image ? (void *)image->texture : NULL,
        (void *)graphics);
 
-    if (!image)        { printf("FAIL: image is NULL\n");        return 0; }
-    if (!image->texture){ printf("FAIL: image->texture is NULL\n"); return 0; }
-    if (!graphics)     { printf("FAIL: graphics is NULL\n");      return 0; }
+    if (!image)        { allegro_message("FAIL: image is NULL\n");        return 0; }
+    if (!image->texture){ allegro_message("FAIL: image->texture is NULL\n"); return 0; }
+    if (!graphics)     { allegro_message("FAIL: graphics is NULL\n");      return 0; }
 
-    blit(
+    stretch_blit(
         (BITMAP *) image->texture,
-        // (BITMAP *) graphics->renderer,
-        screen,
-        0, 0, 0, 0,
-        image->w, image->h
+        (BITMAP *) graphics->renderer,
+        0, 0,
+        image->w, image->h,
+        0, 0,
+        SCREEN_W, SCREEN_H
     );
 
     return 1;

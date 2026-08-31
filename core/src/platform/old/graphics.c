@@ -10,7 +10,13 @@
 
 nadia_graphics_t *nadia_graphics_init(config_t *configs)
 {
-    printf(stderr, "Nadia is initializing the graphical environment...\n"); fflush(stderr);
+    fprintf(stderr, "Nadia is initializing the graphical environment...\n"); fflush(stderr);
+    
+    if (!configs)
+    {
+        fprintf(stderr, "!! Nadia failed: configs pointer is null. !!\n");
+        return NULL;
+    }
 
     nadia_graphics_t *g = (nadia_graphics_t *) malloc(sizeof (nadia_graphics_t));
 
@@ -20,28 +26,32 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
         return NULL;
     }
 
-    if (!configs)
-    {
-        fprintf(stderr, "!! Nadia failed: configs pointer is null. !!\n");
-        return NULL;
-    }
-
     set_color_depth(configure_get_colordepth(configs));
 
     fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
 
-    g->renderer = NULL;
+    memset(g, 0, sizeof(nadia_graphics_t));
 
     if (set_gfx_mode(GFX_AUTODETECT, configure_get_display_w(configs), configure_get_display_h(configs), 0, 0) != 0)
     {
         allegro_message("Error: %s\n", allegro_error);
-        return false;
+        free(g);
+        return NULL;
     }
 
-    g->framebuffer.data = (nadia_texture_t) screen;
+    BITMAP *backbuffer = create_bitmap(configure_get_display_w(configs), configure_get_display_h(configs));
+    if (!backbuffer) {
+        allegro_message("Error: cannot create backbuffer\n");
+        free(g);
+        return NULL;
+    }
+
+    g->renderer = (nadia_renderer_t) screen;
+    g->framebuffer.data = (nadia_texture_t) backbuffer;
+    g->framebuffer.width = configure_get_display_w(configs);
+    g->framebuffer.height = configure_get_display_h(configs);
 
     fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
-
     fprintf(stderr, ">> Nadia: Graphical environment is now ready.\n"); fflush(stderr);
 
     return g;
@@ -49,19 +59,24 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
 
 void nadia_clear_display(nadia_graphics_t *ctx, unsigned int color)
 {
-    clear_to_color(ctx->framebuffer.data, makecol(
-        (color>>16)&0xFF,
-        (color>>8)&0xFF,
-        color&0xFF
+    if (!ctx || !ctx->framebuffer.data) return;
+    clear_to_color((BITMAP *)ctx->framebuffer.data, makecol(
+        (color >> 16) & 0xFF,
+        (color >> 8) & 0xFF,
+        color & 0xFF
     ));
 }
 
 void nadia_graphics_present(nadia_graphics_t *ctx)
-{ screen = ctx->framebuffer.data; }
+{
+    if (!ctx || !ctx->framebuffer.data) return;
+    vsync();
+    blit(ctx->framebuffer.data, ctx->renderer, 0, 0, 0, 0, ctx->framebuffer.width, ctx->framebuffer.height);
+}
 
 void nadia_graphics_quit(nadia_graphics_t *ctx)
 {
-    // set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-    // readkey();
+    if (!ctx) return;
+    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
     free(ctx);
 }
