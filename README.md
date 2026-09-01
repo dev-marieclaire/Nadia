@@ -37,10 +37,10 @@ DOS specifications will be detailed with the time.
 Image formatting is quite strict in DOS. So far, the project has support for BITMAP only.
 
 The way to convert a BMP image into a supported DOS format is the following:
-`convert [your_file.bmp] -type TrueColor -compress None -define bmp:format=bmp3 [converted_file].bmp`
+`convert [your_file.bmp] -type TrueColor -compress None -define bmp:format=bmp3 [converted_file.bmp]`
 
 And to check if the BMP image is a valid Windows 3.x bitmap is the following:
-`file fixed_dither.bmp`
+`file [image.bmp]`
 
 If converted correctly, the information displayed by the `file` command must look similar to this:
 `dither.bmp: PC bitmap, Windows 3.x format, 800 x 699 x 24, image size 1677600, resolution 11811 x 11811 px/m, cbSize 1677654, bits offset 54`
