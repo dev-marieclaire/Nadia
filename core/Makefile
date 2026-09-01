@@ -3,8 +3,10 @@ NADIA_ROOTDIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 INCDIR = $(NADIA_ROOTDIR)include
 SRCDIR = $(NADIA_ROOTDIR)src
 
+TARGET_LOWERCASE = $(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+
 #Output lib filename.
-LIB_NAME = libnadia_platform_$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]').a
+LIB_NAME = libnadia_platform_$(TARGET_LOWERCASE).a
 
 # Sets if undefined.
 TARGET	?= MODERN
@@ -15,7 +17,7 @@ CORE_SRC	:= $(wildcard $(SRCDIR)/common/*.c)
 GRAPHICS_SRC	:= $(wildcard $(SRCDIR)/graphics/*.c) $(wildcard $(SRCDIR)/graphics/*.cpp)
 
 BUILDDIR	= $(NADIA_ROOTDIR)build
-OBJDIR		:= $(BUILDDIR)/obj/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+OBJDIR		:= $(BUILDDIR)/obj/$(TARGET_LOWERCASE)
 
 ALL_SRCFILES	:= $(CORE_SRC) $(GRAPHICS_SRC) $(PLATFORM_SRC)
 

@@ -6,7 +6,7 @@ include ../../core/platform_config.mk
 NAME	= compat
 INCDIR	= $(NADIA_ROOTDIR)/include
 SRC	= $(NAME).c
-OBJDIR	= build/$(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+OBJDIR	= build/$(TARGET_LOWERCASE)
 BIN	= $(OBJDIR)/$(NAME)$(EXT)
 
 .PHONY: all clean engine
