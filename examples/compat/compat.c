@@ -2,19 +2,19 @@
 #include <stdlib.h>
 
 #include <nadia.h>
-#include <graphics.h>
+#include <graphics/graphics.h>
 
 int main()
 {
     config_t *configs = load_default_configs();
 
-    core_t *application = nadia_init(configs);
+    nadia_core_t *application = nadia_init(configs);
     nadia_graphics_t *graphics = nadia_graphics_init(configs);
 
     if (!application || !graphics)
         return EXIT_FAILURE;
 
-    while (nadia_state(application) == STATE_RUNNING)
+    while (nadia_state(application) == NADIA_STATE_RUNNING)
     {
         nadia_poll_events(application);
 
