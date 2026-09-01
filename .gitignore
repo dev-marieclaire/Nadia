@@ -18,3 +18,8 @@
 # IDE / OS garbage
 .DS_Store
 Thumbs.db
+
+# Assets.
+assets/from idle.png
+assets/idle.png
+assets/walk.png
