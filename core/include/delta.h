@@ -1,15 +1,25 @@
 #pragma once
 
+#ifndef DELTA_H
+#define DELTA_H
+
+#include <stdint.h>
+
+// This struct is meant to store many tipes of delta calculations, not only delta time.
 typedef struct delta_t
 {
-    unsigned int    start;  // Starting value.
-    unsigned int    end;    // Ending value.
+    uint64_t    start;  // Starting value.
+    uint64_t    end;    // Ending value.
 
-    // unsigned int    elapsed;    // Stores the difference between the start and end.
+    uint64_t    current;    // Current delta value.
 
-    unsigned int    current;    // Current delta value.
-    // unsigned int    previous;   // Previous delta value.
+    uint64_t    target; // Target value.
 } delta_t;
 
+// Initializes the delta time.
 void delta_time_init(delta_t *delta_time, unsigned int target_timelapse);
-unsigned int delta_store_time(void);
+
+// Updates the delta time.
+void delta_time_update(delta_t *dt);
+
+#endif // End of DELTA_H

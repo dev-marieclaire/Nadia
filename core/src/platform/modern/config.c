@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 
-#include <platform/config.h>
+#include <config.h>
 #include <graphics/graphics.h>
 
 struct config_t
@@ -74,11 +74,17 @@ unsigned int configure_get_framebufferflags(const config_t *configs)
 display_t *configure_get_display(config_t *configs)
 { return &configs->display; }
 
-int configure_get_display_w(const config_t *configs)
+unsigned int configure_get_display_w(const config_t *configs)
 { return configs->display.w; }
 
-int configure_get_display_h(const config_t *configs)
+unsigned int configure_get_display_h(const config_t *configs)
 { return configs->display.h; }
+
+unsigned int configure_get_display_y(const config_t *configs)
+{ return configs->display.y; }
+
+unsigned int configure_get_display_x(const config_t *configs)
+{ return configs->display.x; }
 
 char *configure_get_title(const config_t *configs)
 { return configs->title;}

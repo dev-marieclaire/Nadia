@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+struct nadia_texture_t  { BITMAP *texture; };
+struct nadia_renderer_t { BITMAP *renderer; };
+struct nadia_window_t   { short short int dummy; };
+
 nadia_graphics_t *nadia_graphics_init(config_t *configs)
 {
     fprintf(stderr, "Nadia is initializing the graphical environment...\n"); fflush(stderr);

@@ -1,8 +1,12 @@
 // platform/modern/graphics.c
-
 #include <nadia.h>
+#include <platform_api.h>
+
 #include <graphics/graphics.h>
-#include <platform/window.h>
+
+struct nadia_texture_t  { SDL_Texture *texture; };
+struct nadia_renderer_t { SDL_Renderer *renderer; };
+struct nadia_window_t   { SDL_Window *window; };
 
 nadia_graphics_t *nadia_graphics_init(config_t *configs)
 {
@@ -23,16 +27,18 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
     }
 
     fprintf(stderr, ">> Nadia: Creating display.\n"); fflush(stderr);
-    display_t display;
-
-    display.w = configure_get_display_w(configs);
-    display.h = configure_get_display_h(configs);
+    display_t display = {
+        .w = configure_get_display_w(configs),
+        .h = configure_get_display_h(configs),
+        .x = configure_get_display_x(configs),
+        .y = configure_get_display_y(configs)
+    };
 
     fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Creating window.\n"); fflush(stderr);
 
-    g->window = (nadia_window_t) create_window(
+    g->window = (nadia_window_t *) NADIA_PLATFORM.create_window(
         configure_get_title(configs), &display,
         configure_get_windowflags(configs)
     );
@@ -48,7 +54,7 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
     fprintf(stderr, ">> Nadia: sucess\n"); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
-    g->renderer = (nadia_renderer_t) SDL_CreateRenderer((SDL_Window *) g->window, -1, configure_get_framebufferflags(configs));
+    g->renderer = (nadia_renderer_t *) SDL_CreateRenderer((SDL_Window *) g->window, -1, configure_get_framebufferflags(configs));
     if (!g->renderer)
     {
         fprintf(stderr, "!! Nadia failed: %s !!\n", SDL_GetError());
@@ -60,8 +66,8 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
     fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
 
     fprintf(stderr, ">> Nadia: Initializing SDL image.\n"); fflush(stderr);
-    int img_initted = IMG_Init(configure_get_image_libraryflags(configs));
-    if(img_initted & configure_get_image_libraryflags(configs) != configure_get_image_libraryflags(configs))
+    int img_initted = IMG_Init((int) configure_get_image_libraryflags(configs));
+    if((img_initted & (int) configure_get_image_libraryflags(configs)) != (int) configure_get_image_libraryflags(configs))
     {
         printf("IMG_Init: Failed to init required jpg and png support!\n");
         printf("IMG_Init: %s\n", IMG_GetError());
@@ -77,10 +83,10 @@ void nadia_clear_display(nadia_graphics_t *ctx, unsigned int color)
 {
     SDL_SetRenderDrawColor(
         (SDL_Renderer *) ctx->renderer,
-        (color>>16)&0xFF,
-        (color>>8)&0xFF,
-        color&0xFF,
-        (color>>24)&0xFF
+        (uint8_t) (color>>16)&0xFF,
+        (uint8_t) (color>>8)&0xFF,
+        (uint8_t) color&0xFF,
+        (uint8_t) (color>>24)&0xFF
     );
     SDL_RenderClear((SDL_Renderer *) ctx->renderer);
 }

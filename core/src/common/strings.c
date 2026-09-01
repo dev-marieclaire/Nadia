@@ -1,10 +1,10 @@
-// core/strings.c
+// core/nadia_strings.c
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-char *string(const char *data)
+char *nadia_string_copy(const char *data)
 {
     char *out = (char *) malloc(strlen(data) + 1);
 

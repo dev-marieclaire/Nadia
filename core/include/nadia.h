@@ -1,39 +1,42 @@
 // nadia.h
 
-// This file declares the structure that holds the core elements of an application
-// and some default init values. A window pointer, a framebuffer pointer, an event
-// handler, a status variable and a title.
-// For old systems, it only stores a framebuffer due to the lack of windows.
-
 #pragma once
 
 #ifndef NADIA_H
 #define NADIA_H
 
-#define STATE_RUNNING   0x01
-#define STATE_IDLE      0x02
-#define STATE_QUIT      0x03
-#define STATE_INIT_FAILURE      0xFD
-#define STATE_RUNTIME_FAILURE   0xFF
+#define NADIA_STATE_RUNNING   0x01
+#define NADIA_STATE_IDLE      0x02
+#define NADIA_STATE_QUIT      0x04
+#define NADIA_STATE_INIT_FAILURE      0xFD
+#define NADIA_STATE_RUNTIME_FAILURE   0xFF
 
 #define DEFAULT_TITLE   "APPLICATION"
 
-#include <platform/config.h>
-#include <delta.h>
-#include "strings.h"
-#include <stdbool.h>
+#include <config.h>
+#include <nadia_strings.h>
 
-typedef struct core_t core_t;
+// A nadia_core_t object is responsible of storing and handling logical states of the engine.
+typedef struct nadia_core_t
+{
+    int     state;  // Stores the current execution-time status.
+    char    *title; // Stores the title of the program.
+} nadia_core_t;
 
-core_t  *nadia_init(config_t *configs);
-int     nadia_state(const core_t *c);
-void    nadia_quit(core_t *c);
+// Initializes the logical environment.
+nadia_core_t  *nadia_init(config_t *configs);
+
+// Destroys the logical environment.
+void nadia_quit(nadia_core_t *c);
+
+// Returns the current state of Nadia.
+int nadia_state(const nadia_core_t *c);
 
 // Input
-void    nadia_poll_events(core_t *c);
+void nadia_poll_events(nadia_core_t *c);
 
 // General
-void    nadia_await(unsigned int ms);
-void    nadia_await_seconds(float s);
+void nadia_await(unsigned int ms);   // Delays execution in miliseconds.
+void nadia_await_seconds(unsigned int s);   // Delays execution in seconds.
 
-#endif // End of CORE_H
+#endif // End of NADIA_H
