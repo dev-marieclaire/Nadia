@@ -6,6 +6,7 @@
 # Build artifacts
 *.o
 *.a
+*.d
 *.exe
 *.EXE
 *.swp
