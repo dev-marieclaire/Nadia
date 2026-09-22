@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include <nadia.h>
-#include <graphics/graphics.h>
+#include <graphics.h>
 
 int main()
 {

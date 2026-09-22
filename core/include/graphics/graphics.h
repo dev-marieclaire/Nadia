@@ -3,12 +3,10 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-#include <config.h>
+#include <platform/config.h>
 
-#include <graphics/sprite.h>
+// #include <graphics/sprite.h>
 #include <graphics/animation.h>
-
-#include <display.h>
 
 #define DEFAULT_DISPLAY_WIDTH    320
 #define DEFAULT_DISPLAY_HEIGHT   200
@@ -35,9 +33,8 @@
 // For this purpose, SDL_Texture and BITMAP * will be casted to nadia_texture_t.
 // SDL_Renderer and Allegro's screen will be stored in nadia_renderer_t.
 // And, finally, SDL_Window will be stored in nadia_window_t.
-typedef struct nadia_texture_t nadia_texture_t;
 typedef struct nadia_renderer_t nadia_renderer_t;
-typedef struct nadia_window_t nadia_window_t;
+typedef struct nadia_window_t   nadia_window_t;
 
 typedef struct
 {
@@ -59,16 +56,16 @@ typedef struct
 nadia_graphics_t *nadia_graphics_init(config_t *configs);
 
 // Quits the graphical environment.
-void nadia_graphics_quit(nadia_graphics_t *ctx);
+void nadia_graphics_quit(nadia_graphics_t *env);
 
 // Clears the display to a color.
 // The color format must be aRGB, being alpha the first two digits in a hexadecimal
 // number in a 32 bit color depth mode.
 // If the color mode doesn't support Alpha channel, like in a 24 bit color depth
 // mode "True color", the alpha values are just ignored.
-void nadia_clear_display(nadia_graphics_t *ctx, unsigned int color);
+void nadia_clear_display(nadia_graphics_t *env, unsigned int color);
 
 // Copies the contents of the backbuffer into the framebuffer or renderer.
-void nadia_graphics_present(nadia_graphics_t *ctx);
+void nadia_graphics_present(nadia_graphics_t *env);
 
 #endif

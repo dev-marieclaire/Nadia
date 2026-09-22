@@ -1,7 +1,7 @@
 // common/delta.c
 
-#include <delta.h>
-#include <platform_api.h>
+#include <common/delta.h>
+#include <platform/api.h>
 
 #include <time.h>
 #include <stdlib.h>
@@ -11,14 +11,14 @@
 void delta_time_init(delta_t *delta_time, unsigned int target_timelapse)
 {
     delta_time->target = target_timelapse;
-    delta_time->start = NADIA_PLATFORM.get_ticks_ms();
+    delta_time->start = NADIA_CORE.get_ticks_ms();
     delta_time->current = target_timelapse;
 }
 
 // Updates the delta time.
 void delta_time_update(delta_t *dt)
 {
-    uint64_t now = NADIA_PLATFORM.get_ticks_ms();
+    uint64_t now = NADIA_CORE.get_ticks_ms();
     dt->current = now - dt->start;
 
     // Prevents the spiral of death.

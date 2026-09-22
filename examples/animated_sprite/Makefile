@@ -6,7 +6,7 @@ include ../../core/platform_config.mk
 NAME	= animated_sprite
 INCDIR	= $(NADIA_ROOTDIR)/include
 SRC	= $(NAME).c
-OBJDIR	= build/$(TARGET_LOWERCASE)
+OBJDIR	= ../../build/bin/$(NAME)/$(TARGET_LOWERCASE)
 BIN	= $(OBJDIR)/$(NAME)$(EXT)
 
 .PHONY: all clean engine
@@ -22,4 +22,3 @@ $(BIN): $(SRC)
 
 clean:
 	rm -rf $(OBJDIR)
-

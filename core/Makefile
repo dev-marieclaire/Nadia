@@ -1,66 +1,109 @@
-NADIA_ROOTDIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+# ============================================================
+#  Nadia Engine – Core Makefile (Simplified)
+#  Usage: make TARGET=MODERN   (or OLD)
+# ============================================================
 
-INCDIR = $(NADIA_ROOTDIR)include
-SRCDIR = $(NADIA_ROOTDIR)src
+MAKEFILE_DIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+NADIA_ROOTDIR := $(MAKEFILE_DIR)
 
-TARGET_LOWERCASE = $(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+# ----------------------------------------------------------------------
+#  Directories
+# ----------------------------------------------------------------------
+INCDIR        := $(NADIA_ROOTDIR)/include
+SRCDIR        := $(NADIA_ROOTDIR)/src
+BUILDDIR      := $(NADIA_ROOTDIR)/../build/lib
+OBJDIR        := $(BUILDDIR)/obj
 
-#Output lib filename.
-LIB_NAME = libnadia_platform_$(TARGET_LOWERCASE).a
+# ----------------------------------------------------------------------
+#  Target selection
+# ----------------------------------------------------------------------
+TARGET        ?= MODERN
+TARGET_LOWERCASE := $(shell echo $(TARGET) | tr '[:upper:]' '[:lower:]')
+PLATFORM_DIR  := $(SRCDIR)/platform/$(TARGET_LOWERCASE)
 
-# Sets if undefined.
-TARGET	?= MODERN
+# ----------------------------------------------------------------------
+#  Source files
+# ----------------------------------------------------------------------
+COMMON_SRC    := $(wildcard $(SRCDIR)/common/*.c)
+GRAPHICS_C    := $(wildcard $(SRCDIR)/graphics/*.c)
+GRAPHICS_CPP  := $(wildcard $(SRCDIR)/graphics/*.cpp)
+PLATFORM_SRC  := $(wildcard $(PLATFORM_DIR)/*.c)
 
-include platform_config.mk
+ALL_C         := $(COMMON_SRC) $(GRAPHICS_C) $(PLATFORM_SRC)
+ALL_CPP       := $(GRAPHICS_CPP)
 
-CORE_SRC	:= $(wildcard $(SRCDIR)/common/*.c)
-GRAPHICS_SRC	:= $(wildcard $(SRCDIR)/graphics/*.c) $(wildcard $(SRCDIR)/graphics/*.cpp)
+# Object files (flattened – no subdirs)
+C_OBJ         := $(addprefix $(OBJDIR)/, $(notdir $(ALL_C:.c=.o)))
+CPP_OBJ       := $(addprefix $(OBJDIR)/, $(notdir $(ALL_CPP:.cpp=.o)))
+OBJFILES      := $(C_OBJ) $(CPP_OBJ)
 
-BUILDDIR	= $(NADIA_ROOTDIR)build
-OBJDIR		:= $(BUILDDIR)/obj/$(TARGET_LOWERCASE)
+# ----------------------------------------------------------------------
+#  Library output
+# ----------------------------------------------------------------------
+LIB_NAME      := libnadia_platform_$(TARGET_LOWERCASE).a
+OUT           := $(BUILDDIR)/$(LIB_NAME)
 
-ALL_SRCFILES	:= $(CORE_SRC) $(GRAPHICS_SRC) $(PLATFORM_SRC)
+# ----------------------------------------------------------------------
+#  Compiler flags
+# ----------------------------------------------------------------------
+BASE_CFLAGS   := -I$(INCDIR) -I$(PLATFORM_DIR) -MMD -MP -Wall -Wextra
 
-C_SRC	:= $(filter %.c,$(ALL_SRCFILES))
-CPP_SRC	:= $(filter %.cpp,$(ALL_SRCFILES))
+include $(NADIA_ROOTDIR)/platform_config.mk
 
-C_OBJ := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(C_SRC))
-CPP_OBJ := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(CPP_SRC))
+CFLAGS    += $(BASE_CFLAGS)
+CXXFLAGS  += $(BASE_CFLAGS)
 
-OBJFILES	:= $(C_OBJ) $(CPP_OBJ)
-OUT		:= $(BUILDDIR)/$(LIB_NAME)
-
-$(info === DEBUG ===)
-$(info CC=$(CC))
-$(info CXX=$(CXX))
-$(info CFLAGS=$(CFLAGS))
-$(info CXXFLAGS=$(CXXFLAGS))
-$(info MAKEFILE_LIST = $(MAKEFILE_LIST))
-$(info lastword = $(lastword $(MAKEFILE_LIST)))
-$(info NADIA_ROOTDIR = $(NADIA_ROOTDIR))
-$(info SRCDIR = $(SRCDIR))
-$(info BUILDDIR = $(BUILDDIR))
-$(info OBJDIR = $(OBJDIR))
-$(info OUT = $(OUT))
-$(info ALL_SRCFILES = $(ALL_SRCFILES))
+# ----------------------------------------------------------------------
+#  Debug output (useful for troubleshooting)
+# ----------------------------------------------------------------------
+$(info ===== BUILD CONFIG =====)
+$(info TARGET = $(TARGET))
+$(info PLATFORM_DIR = $(PLATFORM_DIR))
+$(info ALL_C = $(ALL_C))
+$(info ALL_CPP = $(ALL_CPP))
+$(info C_OBJ = $(C_OBJ))
+$(info CPP_OBJ = $(CPP_OBJ))
 $(info OBJFILES = $(OBJFILES))
-$(info === END DEBUG ===)
+$(info OUT = $(OUT))
+$(info =======================)
 
 .PHONY: all clean
 
 all: $(OUT)
 
+ifeq ($(strip $(PLATFORM_SRC)),)
+$(error "PLATFORM_SRC is empty. Check that $(PLATFORM_DIR) exists and contains .c files.")
+endif
+
+# ----------------------------------------------------------------------
+#  Build rules
+# ----------------------------------------------------------------------
+
+# Link – create static library
 $(OUT): $(OBJFILES)
 	@mkdir -p $(dir $@)
+	@echo "Creating archive: $@"
 	ar rcs $@ $^
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(dir $@)
+# Tell make where to find .c and .cpp files
+vpath %.c $(SRCDIR)/common $(SRCDIR)/graphics $(PLATFORM_DIR)
+vpath %.cpp $(SRCDIR)/graphics
+
+# Compile C sources
+$(OBJDIR)/%.o: %.c
+	@mkdir -p $(OBJDIR)
+	@echo "Compiling C: $<"
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(dir $@)
+# Compile C++ sources
+$(OBJDIR)/%.o: %.cpp
+	@mkdir -p $(OBJDIR)
+	@echo "Compiling C++: $<"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Clean
 clean:
-	rm -fr $(BUILDDIR)
+	rm -fr $(NADIA_ROOTDIR)/../build/
+
+# Include auto-dependencies
+-include $(OBJFILES:.o=.d)

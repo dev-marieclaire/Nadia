@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include <platform/config.h>
-#include <graphics/graphics.h>
+#include <grahpics/graphics.h>
 
 struct config_t
 {

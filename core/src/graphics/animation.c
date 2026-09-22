@@ -1,7 +1,7 @@
 // graphics/animations_t.c
 #include <graphics/animation.h>
 
-#include "strings.h"
+#include <nadia_strings.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -20,7 +20,7 @@ animation_t *create_animation_t(unsigned int delay_ms, unsigned short int total_
     animation->total_frames = total_frames;
     animation->duration_ms = animation->delay_ms * animation->total_frames;
     animation->frame_index = 0;
-    animation->name = string(name);
+    animation->name = nadia_string_copy(name);
 
     return animation;
 }
@@ -37,6 +37,6 @@ bool update_animation(animation_t *animation, unsigned int delta_ms)
         return true;
     }
 
-    animation->frame_index = animation->timer_ms / animation->delay_ms;
+    animation->frame_index = (short unsigned int) (animation->timer_ms / animation->delay_ms);
     return false;
 }

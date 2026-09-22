@@ -5,38 +5,40 @@
 #ifndef NADIA_H
 #define NADIA_H
 
+#define NADIA_STATE_INITIALIZING 0x00
 #define NADIA_STATE_RUNNING   0x01
 #define NADIA_STATE_IDLE      0x02
 #define NADIA_STATE_QUIT      0x04
 #define NADIA_STATE_INIT_FAILURE      0xFD
 #define NADIA_STATE_RUNTIME_FAILURE   0xFF
 
-#define DEFAULT_TITLE   "APPLICATION"
-
-#include <config.h>
+#include <platform/config.h>
+#include <platform/api.h>
 #include <nadia_strings.h>
 
-// A nadia_core_t object is responsible of storing and handling logical states of the engine.
-typedef struct nadia_core_t
+typedef struct
 {
+    void (*init)(config_t *configs); // Initializes the core.
+    void (*quit)(void);
+    int (*get_state)(void);
+
+    /* Hi-Res Timer. */
+    // Returns the amount of elapsed time in miliseconds since the start of execution.
+    uint64_t (*get_ticks_ms)(void);
+    void (*sleep_ms)(uint32_t ms); // Pauses execution.
+
+    /* Debug Printing and Logging. */
+    void (*log)(const char *message);   // Registers a log message.
+    void (*set_debug_mode)(uint8_t status);    // Enables the debug mode.
+
+    /* Input */
+    int (*poll_events)(void *event);
+
     int     state;  // Stores the current execution-time status.
+    uint8_t debug_mode; // Global variable that enables or disables debug mode.
     char    *title; // Stores the title of the program.
 } nadia_core_t;
 
-// Initializes the logical environment.
-nadia_core_t  *nadia_init(config_t *configs);
-
-// Destroys the logical environment.
-void nadia_quit(nadia_core_t *c);
-
-// Returns the current state of Nadia.
-int nadia_state(const nadia_core_t *c);
-
-// Input
-void nadia_poll_events(nadia_core_t *c);
-
-// General
-void nadia_await(unsigned int ms);   // Delays execution in miliseconds.
-void nadia_await_seconds(unsigned int s);   // Delays execution in seconds.
+extern nadia_core_t NADIA_CORE;
 
 #endif // End of NADIA_H

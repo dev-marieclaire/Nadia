@@ -1,6 +1,6 @@
 // platform/modern/graphics.c
 #include <nadia.h>
-#include <platform_api.h>
+#include <platform/api.h>
 
 #include <graphics/graphics.h>
 
@@ -10,71 +10,74 @@ struct nadia_window_t   { SDL_Window *window; };
 
 nadia_graphics_t *nadia_graphics_init(config_t *configs)
 {
-    fprintf(stderr, "Nadia is initializing the graphical environment...\n"); fflush(stderr);
+    NADIA_CORE.log("Nadia is initializing the graphical environment...\n");
 
     nadia_graphics_t *g = (nadia_graphics_t *) malloc(sizeof (nadia_graphics_t));
 
     if (!g)
     {
-        fprintf(stderr, "!! Nadia failed: graphic context pointer is null. !!\n");
+        NADIA_CORE.log("!! Nadia failed: graphic context pointer is null. !!\n");
         return NULL;
     }
 
     if (!configs)
     {
-        fprintf(stderr, "!! Nadia failed: configs pointer is null. !!\n");
+        NADIA_CORE.log("!! Nadia failed: configs pointer is null. !!\n");
         return NULL;
     }
 
-    fprintf(stderr, ">> Nadia: Creating display.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: Creating display.\n");
     display_t display = {
-        .w = configure_get_display_w(configs),
-        .h = configure_get_display_h(configs),
-        .x = configure_get_display_x(configs),
-        .y = configure_get_display_y(configs)
+        .w = NADIA_CONFIG.get_display_w(),
+        .h = NADIA_CONFIG.get_display_h(),
+        .x = NADIA_CONFIG.get_display_x(),
+        .y = NADIA_CONFIG.get_display_y()
     };
 
-    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: success.\n");
 
-    fprintf(stderr, ">> Nadia: Creating window.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: Creating window.\n");
 
-    g->window = (nadia_window_t *) NADIA_PLATFORM.create_window(
-        configure_get_title(configs), &display,
-        configure_get_windowflags(configs)
+    g->window = (nadia_window_t *) NADIA_GFX.create_window(
+        NADIA_CONFIG.get_title(), &display,
+        NADIA_CONFIG.get_window_flags()
     );
 
     if (!g->window)
     {
-        fprintf(stderr, "!! Nadia failed: Couldn't initialize window. !!\n");
+        NADIA_CORE.log("!! Nadia failed: Couldn't initialize window. !!\n");
         SDL_Quit();
         free(g);
         return NULL;
     }
 
-    fprintf(stderr, ">> Nadia: sucess\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: sucess\n");
 
-    fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
-    g->renderer = (nadia_renderer_t *) SDL_CreateRenderer((SDL_Window *) g->window, -1, configure_get_framebufferflags(configs));
+    NADIA_CORE.log(">> Nadia: Creating framebuffer.\n");
+    g->renderer = (nadia_renderer_t *) SDL_CreateRenderer((SDL_Window *) g->window, -1, NADIA_CONFIG.get_renderer_flags());
     if (!g->renderer)
     {
-        fprintf(stderr, "!! Nadia failed: %s !!\n", SDL_GetError());
-        SDL_DestroyWindow((SDL_Window *) g->window);
-        SDL_Quit();
+        NADIA_CORE.log("!! Nadia failed !!\n");
+        NADIA_CORE.log(SDL_GetError());
+        NADIA_GFX.destroy_window((nadia_window_t *) g->window);
+        NADIA_BACKEND.quit();
+        NADIA_CORE.quit();
         free(g);
         return NULL;
     }
-    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: success.\n");
 
-    fprintf(stderr, ">> Nadia: Initializing SDL image.\n"); fflush(stderr);
-    int img_initted = IMG_Init((int) configure_get_image_libraryflags(configs));
-    if((img_initted & (int) configure_get_image_libraryflags(configs)) != (int) configure_get_image_libraryflags(configs))
+    NADIA_CORE.log(">> Nadia: Initializing SDL image.\n");
+    int img_initted = IMG_Init((int) NADIA_CONFIG.get_image_flags());
+
+    if((img_initted & (int) NADIA_CONFIG.get_image_flags()) != (int) NADIA_CONFIG.get_image_flags())
     {
         printf("IMG_Init: Failed to init required jpg and png support!\n");
         printf("IMG_Init: %s\n", IMG_GetError());
     }
-    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: success.\n");
 
-    fprintf(stderr, ">> Nadia: Graphical environment is now ready.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: Graphical environment is now ready.\n");
 
     return g;
 }

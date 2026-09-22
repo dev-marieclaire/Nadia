@@ -6,64 +6,58 @@
 #include <stdio.h>
 
 // Initializes the logical environment.
-nadia_core_t *nadia_init(config_t *configs)
+static void init(config_t *configs)
 {
     // nadia_config_t was unused for setting up a logical environment in Allegro.
     (void) configs;
-    setbuf(stderr, NULL);
-    setbuf(stdout, NULL);
+    // setbuf(stderr, NULL);
+    // setbuf(stdout, NULL);
 
-    fprintf(stderr, "Nadia is starting...\n"); fflush(stderr);
+    NADIA_CORE.log("Nadia is starting...\n");
 
     // Allocates nadia_core_t.
-    nadia_core_t *core = (nadia_core_t *) malloc(sizeof(nadia_core_t));
-    fprintf(stderr, ">> Nadia: Core allocation done.%p\n", (void*)core); fflush(stderr);
+    // NADIA_CORE = (nadia_core_t *) malloc(sizeof(nadia_core_t));
+    // NADIA_CORE.log(">> Nadia: Core allocation done.%p\n", (void*)core);
 
     // Initializes the library.
-    fprintf(stderr, ">> Nadia: Initializing Allegro.\n"); fflush(stderr);
-    if (allegro_init() != 0)
+    NADIA_CORE.log(">> Nadia: Initializing Allegro.\n");
+    if (NADIA_BACKEND.init() != 0)
     {   // Displays a message and prevents memory leak.
-        allegro_message("! Nadia failed: Couldn't initialize Allegro !\n%s", allegro_error);
-        free(core);
-        return NULL;
+        NADIA_CORE.log("! Nadia failed !\n");
+        // return NULL;
     }
-    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
+    NADIA_CORE.log(">> Nadia: success.\n");
 
     // If everything went fine, then the status is set to RUNNING.
-    core->state = NADIA_STATE_RUNNING;
-    fprintf(stderr, "Nadia is now running.\n\n"); fflush(stderr);
-
-    return core;
+    NADIA_CORE.state = NADIA_STATE_RUNNING;
+    NADIA_CORE.log("Nadia is now running.\n\n");
 }
 
 // Destroys the logical environment.
-void nadia_quit(nadia_core_t *c)
+static void quit(void)
 {
-    allegro_exit();
-    
-    if (!c) return;
-    free(c->title);
-    free(c);
+    NADIA_CORE.backend_quit();
+    // if (!NADIA_CORE) return;
+    if (NADIA_CORE.title) free(NADIA_CORE.title);
+    // free(c);
 }
 
 // Returns the current state of Nadia.
-int nadia_state(const nadia_core_t *c)
-{ return c->state; }
+static int get_state(void)
+{ return NADIA_CORE->state; }
 
-void nadia_poll_events(nadia_core_t *c)
-{
-    poll_keyboard();
+static uint64_t old_get_ticks(void) { return (uint64_t) (allegro_get_time() * 1000.0); }
+static void old_sleep(uint32_t ms) { rest(ms); }
 
-    if (key[KEY_ESC])
-    {
-        c->state = NADIA_STATE_QUIT;
-    }
-}
+static void old_log(const char *msg) { allegro_message("%s", msg); }
+static void old_poll_events(void *event) { return -1; }
 
-// Delays execution in miliseconds.
-void nadia_await(unsigned int ms)
-{ rest(ms); }
-
-// Delays execution in seconds.
-void nadia_await_seconds(float s)
-{ rest(s * 1000); }
+nadia_core_t NADIA_CORE = {
+    .init = init,
+    .quit = quit,
+    .get_state = get_state,
+    .get_ticks_ms = old_get_ticks,
+    .sleep_ms = old_sleep,
+    .log = old_log,
+    .poll_events = old_poll_events
+};

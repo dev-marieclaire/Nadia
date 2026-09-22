@@ -14,11 +14,11 @@ struct nadia_window_t   { short short int dummy; };
 
 nadia_graphics_t *nadia_graphics_init(config_t *configs)
 {
-    fprintf(stderr, "Nadia is initializing the graphical environment...\n"); fflush(stderr);
+    NADIA_PLATFORM.log("Nadia is initializing the graphical environment...\n");
     
     if (!configs)
     {
-        fprintf(stderr, "!! Nadia failed: configs pointer is null. !!\n");
+        NADIA_PLATFORM.log("!! Nadia failed: configs pointer is null. !!\n");
         return NULL;
     }
 
@@ -26,19 +26,19 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
 
     if (!g)
     {
-        fprintf(stderr, "!! Nadia failed: graphic context pointer is null. !!\n");
+        NADIA_PLATFORM.log("!! Nadia failed: graphic context pointer is null. !!\n");
         return NULL;
     }
 
     set_color_depth(configure_get_colordepth(configs));
 
-    fprintf(stderr, ">> Nadia: Creating framebuffer.\n"); fflush(stderr);
+    NADIA_PLATFORM.log(">> Nadia: Creating framebuffer.\n");
 
     memset(g, 0, sizeof(nadia_graphics_t));
 
     if (set_gfx_mode(GFX_AUTODETECT, configure_get_display_w(configs), configure_get_display_h(configs), 0, 0) != 0)
     {
-        allegro_message("Error: %s\n", allegro_error);
+        NADIA_PLATFORM.log("Error: %s\n", allegro_error);
         free(g);
         return NULL;
     }
@@ -55,8 +55,8 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
     g->framebuffer.width = configure_get_display_w(configs);
     g->framebuffer.height = configure_get_display_h(configs);
 
-    fprintf(stderr, ">> Nadia: success.\n"); fflush(stderr);
-    fprintf(stderr, ">> Nadia: Graphical environment is now ready.\n"); fflush(stderr);
+    NADIA_PLATFORM.log(">> Nadia: success.\n");
+    NADIA_PLATFORM.log(">> Nadia: Graphical environment is now ready.\n");
 
     return g;
 }

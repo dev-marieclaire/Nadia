@@ -1,90 +1,190 @@
-#include <SDL2/SDL.h>
+// platform/modern/config_modern.c
+#include "priv_modern.h"
+#include <stdlib.h>
+#include <string.h>
 
-#include <config.h>
-#include <graphics/graphics.h>
-
-struct config_t
+static config_t* create_default_config(void)
 {
-    unsigned int libflags;
-    unsigned int libimageflags;
+    config_t *cfg = malloc(sizeof(config_t));
+    if (!cfg) return NULL;
 
-    unsigned int winflags;
-    unsigned int framebflags;
+    cfg->logic->backend  = malloc(sizeof(backend_config_t));
+    cfg->graphics->window   = malloc(sizeof(window_config_t));
+    cfg->graphics->renderer = malloc(sizeof(renderer_config_t));
+    cfg->graphics->buffer   = malloc(sizeof(buffer_config_t));
+    cfg->graphics->image    = malloc(sizeof(image_config_t));
+    cfg->graphics->display  = malloc(sizeof(display_t));
 
-    unsigned short int color_depth;
+    if (!cfg->logic->backend || !cfg->graphics->window || !cfg->graphics->renderer ||
+        !cfg->graphics->buffer || !cfg->graphics->image || !cfg->graphics->display) {
+        free_config(cfg);
+        return NULL;
+    }
 
-    display_t display;
+    // Explicit initialization (malloc does not zero)
+    cfg->title = NULL;
 
-    char *title;
-};
+    cfg->logic->backend->sdl_init_flags = SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER;
 
-config_t *load_default_configs()
-{
-    config_t *configs = (config_t *) calloc(1, sizeof(config_t));
-    configure_set_libraryflags(configs, DEFAULT_SDLFLAGS);
-    configure_set_image_libraryflags(configs, DEFAULT_IMG_FLAGS);
-    configure_set_windowflags(configs, (int) DEFAULT_WINFLAGS);
-    configure_set_framebufferflags(configs, DEFAULT_FRAMEB_FLAGS);
+    cfg->graphics->window->sdl_window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+    cfg->graphics->window->x = SDL_WINDOWPOS_CENTERED;
+    cfg->graphics->window->y = SDL_WINDOWPOS_CENTERED;
 
-    display_t display =
-    {
-        DEFAULT_DISPLAY_WIDTH,
-        DEFAULT_DISPLAY_HEIGHT,
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED
-    };
+    cfg->graphics->renderer->sdl_renderer_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+    cfg->graphics->renderer->vsync_enabled = 1;
 
-    configure_set_display(configs, &display);
+    cfg->graphics->buffer->size   = 0;
+    cfg->graphics->buffer->unused = 0;
 
-    return configs;
+    cfg->graphics->image->img_init_flags = IMG_INIT_PNG | IMG_INIT_JPG;
+
+    cfg->graphics->display->x = -1;
+    cfg->graphics->display->y = -1;
+    cfg->graphics->display->w = 800;
+    cfg->graphics->display->h = 600;
+
+    cfg->title = strdup("APPLICATION");
+    if (!cfg->title) {
+        free_config(cfg);
+        return NULL;
+    }
+
+    return cfg;
 }
 
-// Setter zone
-void configure_set_libraryflags(config_t *configs, const unsigned int libflags)
-{ configs->libflags = libflags; }
+config_t *load_default_configs(void) { return create_default_config(); }
 
-void configure_set_image_libraryflags(config_t *configs, const unsigned int libimageflags)
-{ configs->libimageflags = libimageflags; }
+void free_config(config_t *cfg)
+{
+    if (!cfg) return;
+    free(cfg->logic->backend);
+    free(cfg->graphics->window);
+    free(cfg->graphics->renderer);
+    free(cfg->graphics->buffer);
+    free(cfg->graphics->image);
+    free(cfg->graphics->display);
+    free(cfg->title);
+    free(cfg);
+}
 
-void configure_set_windowflags(config_t *configs, const unsigned int winflags)
-{ configs->winflags = winflags; }
+// ------------------------------------------------------------------
+// Global lazy-loaded config
+// ------------------------------------------------------------------
+static config_t *global_cfg = NULL;
 
-void configure_set_framebufferflags(config_t *configs, const unsigned int framebflags)
-{ configs->framebflags = framebflags; }
+static config_t* ensure_global_cfg(void)
+{
+    if (!global_cfg) global_cfg = load_default_configs();
+    return global_cfg;
+}
 
-void configure_set_display(config_t *configs, const display_t *display)
-{ configs->display = *display; }
+// --- Struct reference getters ---
+static backend_config_t* get_backend(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->logic->backend : NULL;
+}
 
-void configure_set_colordepth(config_t *configs, const short unsigned int colordepth)
-{ configs->color_depth = colordepth; }
+static window_config_t* get_window(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->window : NULL;
+}
 
-// Getter zone
-unsigned int configure_get_libraryflags(const config_t *configs)
-{ return configs->libflags;}
+static renderer_config_t* get_renderer(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->renderer : NULL;
+}
 
-unsigned int configure_get_image_libraryflags(const config_t *configs)
-{ return configs->libimageflags;}
+static buffer_config_t* get_buffer(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->buffer : NULL;
+}
 
-unsigned int configure_get_windowflags(const config_t *configs)
-{ return configs->winflags; }
+static image_config_t* get_image(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->image : NULL;
+}
 
-unsigned int configure_get_framebufferflags(const config_t *configs)
-{ return configs->framebflags; }
+static display_t* get_display(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->display : NULL;
+}
 
-display_t *configure_get_display(config_t *configs)
-{ return &configs->display; }
+static int get_display_w(void)
+{
+    if (!global_cfg) global_cfg = load_default_configs();
+    return global_cfg ? global_cfg->graphics->display->w : 0;
+}
 
-unsigned int configure_get_display_w(const config_t *configs)
-{ return configs->display.w; }
+static int get_display_h(void)
+{
+    if (!global_cfg) global_cfg = load_default_configs();
+    return global_cfg ? global_cfg->graphics->display->h : 0;
+}
 
-unsigned int configure_get_display_h(const config_t *configs)
-{ return configs->display.h; }
+static int get_display_x(void)
+{
+    if (!global_cfg) global_cfg = load_default_configs();
+    return global_cfg ? global_cfg->graphics->display->x : 0;
+}
 
-unsigned int configure_get_display_y(const config_t *configs)
-{ return configs->display.y; }
+static int get_display_y(void)
+{
+    if (!global_cfg) global_cfg = load_default_configs();
+    return global_cfg ? global_cfg->graphics->display->y : 0;
+}
 
-unsigned int configure_get_display_x(const config_t *configs)
-{ return configs->display.x; }
+static char* get_title(void) {
+    if (!global_cfg) global_cfg = load_default_configs();
+    return global_cfg ? global_cfg->title : NULL;
+}
 
-char *configure_get_title(const config_t *configs)
-{ return configs->title;}
+// --- Scalar flag/value getters ---
+static uint32_t get_backend_flags(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->logic->backend->sdl_init_flags : 0;
+}
+
+static uint32_t get_window_flags(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->window->sdl_window_flags : 0;
+}
+
+static uint32_t get_renderer_flags(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->renderer->sdl_renderer_flags : 0;
+}
+
+// static size_t get_buffer_flags(void) {
+//     config_t *cfg = ensure_global_cfg();
+//     return cfg ? cfg->buffer->size : 0;
+// }
+
+static int get_image_flags(void) {
+    config_t *cfg = ensure_global_cfg();
+    return cfg ? cfg->graphics->image->img_init_flags : 0;
+}
+
+nadia_config_t NADIA_CONFIG = {
+    .configuration = NULL,
+
+    .get_backend       = get_backend,
+    .get_window        = get_window,
+    .get_renderer      = get_renderer,
+    .get_buffer        = get_buffer,
+    .get_image         = get_image,
+
+    .get_display       = get_display,
+    .get_display_w     = get_display_w,
+    .get_display_h     = get_display_h,
+    .get_display_x     = get_display_x,
+    .get_display_y     = get_display_y,
+
+    .get_title         = get_title,
+
+    .get_backend_flags = get_backend_flags,
+    .get_window_flags  = get_window_flags,
+    .get_renderer_flags= get_renderer_flags,
+    // .get_buffer_flags  = get_buffer_flags,
+    .get_image_flags   = get_image_flags,
+    .load_defaults     = load_default_configs
+};

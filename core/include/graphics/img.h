@@ -5,18 +5,22 @@
 
 #include <graphics/graphics.h>
 
-typedef void *image_data_t;
-
+/* IMAGE DATATYPE */
 typedef struct img_t
 {
-    image_data_t texture;
-    int w, h;
-    char *name;
+    int pixels[];
+    int w, h; // Image dimensions.
+    char *name; // Image name.
 } img_t;
 
-image_data_t load_image_data(const char *src, nadia_renderer_t dest);
-img_t *create_image(nadia_renderer_t dest, const char *src, const char *name);
-int nadia_blit_image(img_t *image, nadia_graphics_t *graphics);
-void destroy_image(img_t *img);
+/* IMAGE SUBSYSTEM */
+typedef struct
+{
+    img_t   *(*create)(nadia_renderer_t *dest, const char *src, const char *name);
+    int     (*blit)(img_t *image, nadia_renderer_t *dest);
+    void    (*destroy)(img_t *img);
+} nadia_image_t;
+
+extern nadia_image_t NADIA_IMAGE;
 
 #endif // End of IMG_H

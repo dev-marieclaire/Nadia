@@ -3,18 +3,12 @@
 #include <graphics/img.h>
 
 #include <allegro.h>
-
 #include <stdio.h>
 
-image_data_t load_image_data(const char *src, nadia_renderer_t dest)
+static img_t *old_create_image(const char *src, nadia_renderer_t dest)
 {
     (void) dest;
-
-    fprintf(stderr, "DEBUG: load_image_data('%s') color_depth=%d\n",
-            src ? src : "(null)", get_color_depth());
-
     BITMAP *data = load_bitmap(src, NULL);
-    fprintf(stderr, "DEBUG: load_bitmap returned %p\n", (void *)data);
 
     if (!data)
     {
@@ -56,22 +50,12 @@ img_t *create_image(nadia_renderer_t dest, const char *src, const char *name)
 
 int nadia_blit_image(img_t *image, nadia_graphics_t *graphics)
 {
-    allegro_message("DEBUG: image=%p texture=%p graphics=%p\n",
-       (void *)image,
-        image ? (void *)image->texture : NULL,
-       (void *)graphics);
-
-    if (!image)        { allegro_message("FAIL: image is NULL\n");        return 0; }
-    if (!image->texture){ allegro_message("FAIL: image->texture is NULL\n"); return 0; }
-    if (!graphics)     { allegro_message("FAIL: graphics is NULL\n");      return 0; }
-
-    stretch_blit(
+    blit(
         (BITMAP *) image->texture,
         (BITMAP *) graphics->renderer,
         0, 0,
-        image->w, image->h,
         0, 0,
-        SCREEN_W, SCREEN_H
+        image->w, image->h
     );
 
     return 1;
@@ -83,3 +67,9 @@ void destroy_image(img_t *img)
     if (img->texture) destroy_bitmap((BITMAP *) img->texture);
     free(img);
 }
+
+nadia_image_t NADIA_IMAGE = {
+    .create = old_create_image,
+    .blit = old_blit,
+    .destroy = old_destroy
+};

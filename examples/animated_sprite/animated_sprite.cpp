@@ -11,94 +11,6 @@
 #define MON_SCREEN_H  200 * MON_SCREENSCALE
 #define MON_FRAMERATE 60
 
-#ifdef __DJGPP__
-
-#include <allegro.h>
-#include <stdio.h>
-// #include <stdlib.h>
-// #include <stdint.h>
-// #include <math.h>
-
-// game_t game;
-// int frame, frame_counter = 0;
-// BITMAP *sprite_buffer;
-
-// int next;
-
-int main(void)
-{
-    if (allegro_init() != 0) return EXIT_FAILURE;
-    install_keyboard();
-    // install_timer();
-
-    if (set_gfx_mode(GFX_AUTODETECT, SCREEN_W, SCREEN_W, 0, 0) != 0)
-    {
-        set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-        allegro_message("Cannot set graphics mode: \r\n%s\r\n", allegro_error);
-        return EXIT_FAILURE;
-    }
-
-    printf("El programa se ha ejecutado.");
-
-    set_palette(desktop_palette);
-    clear_to_color(screen, makecol(255, 255, 255));
-    textout_centre_ex(screen, font, "Hello, world!", SCREEN_W / 2, SCREEN_H / 2, makecol(0,0,0), -1);
-
-    readkey();
-
-    return EXIT_SUCCESS;
-
-    // char *img_locations[] = {"./idle.png", "./from idle.png", "./walk.png"};
-    // char *img_names[] = {"idle", "from_idle", "walk"};
-
-    // uint8_t img_count = (uint8_t) (sizeof(img_locations) / sizeof(char *));
-
-    // img_t **images = (img_t **) malloc((uint8_t) sizeof(img_t *) * img_count);
-
-    // for (int i = IDLE; i <= WALK; i++)
-    //     images[i] = create_img_t(game.renderer, img_locations[i], img_names[i]);
-
-    // // Since every image has different sprite dimensions, well...
-    // uint8_t sprite_widths[3] = {46, 45, 45};
-    // uint8_t sprite_heights[3] = {55, 58, 58};
-
-    // animation_t **animations = (animation_t **) malloc(
-    //     (int) ( sizeof(animation_t *) * img_count )
-    // );
-
-    // for (int i = IDLE; i <= WALK; i++)
-    // {
-    //     printf("Index: %d\n", i);
-    //     int columns = images[i]->w / sprite_widths[i];
-    //     int rows = images[i]->h / sprite_heights[i];
-    //     int total_frames = columns * rows;
-
-    //     printf("Total frames: %d\n", total_frames);
-
-    //     animations[i] = create_animation_t(64, total_frames, images[i]->name);
-
-    //     if (animations[i]) printf("Successfully created '%s' animation.\n", animations[i]->name);
-    //     else
-    //     {
-    //         printf("Couldn't create animation with %d index.\n", i);
-    //         return EXIT_FAILURE;
-    //     }
-    // }
-
-    // sprite_t sprite(images[IDLE], sprite_widths[IDLE], sprite_heights[IDLE]);
-
-    // sprite.position(
-    //     (screen.w - sprite.get_width() * SCREENSCALE) / SCREENSCALE,
-    //     (screen.h - sprite.get_height() * SCREENSCALE) / SCREENSCALE
-    // );
-
-    // sprite.iScale(SCREENSCALE);
-}
-
-END_OF_MAIN();
-
-#else
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
@@ -324,5 +236,3 @@ int main()
 
     return EXIT_SUCCESS;
 }
-
-#endif

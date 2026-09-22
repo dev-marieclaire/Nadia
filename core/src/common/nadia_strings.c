@@ -1,4 +1,4 @@
-// core/nadia_strings.c
+// common/nadia_strings.c
 
 #include <stdlib.h>
 #include <stdio.h>
