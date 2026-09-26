@@ -25,19 +25,7 @@ typedef struct
     void (*quit)(void); // Quits the backend.
 } nadia_backend_t;
 
-typedef struct
-{
-    /* Textures */
-    nadia_texture_t *(*load_texture)(const char *src, nadia_renderer_t *dest);
-
-    /* Window */
-    nadia_window_t *(*create_window)(const char *title, display_t *area, unsigned int flags);
-    void (*destroy_window)(nadia_window_t *handle);
-} nadia_gfxapi_t;
-
-
 // Global singleton.
 extern nadia_backend_t  NADIA_BACKEND;
-extern nadia_gfxapi_t   NADIA_GFX;
 
 #endif // End of API_H

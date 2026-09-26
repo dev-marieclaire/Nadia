@@ -48,11 +48,11 @@ img_t *create_image(nadia_renderer_t dest, const char *src, const char *name)
     return img;
 }
 
-int nadia_blit_image(img_t *image, nadia_graphics_t *graphics)
+int nadia_blit_image(img_t *image, nadia_gctx_t *ctx)
 {
     blit(
         (BITMAP *) image->texture,
-        (BITMAP *) graphics->renderer,
+        (BITMAP *) ctx->renderer,
         0, 0,
         0, 0,
         image->w, image->h

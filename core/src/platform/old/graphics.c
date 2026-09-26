@@ -12,7 +12,7 @@ struct nadia_texture_t  { BITMAP *texture; };
 struct nadia_renderer_t { BITMAP *renderer; };
 struct nadia_window_t   { short short int dummy; };
 
-nadia_graphics_t *nadia_graphics_init(config_t *configs)
+nadia_gctx_t *nadia_graphics_init(config_t *configs)
 {
     NADIA_PLATFORM.log("Nadia is initializing the graphical environment...\n");
     
@@ -22,7 +22,7 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
         return NULL;
     }
 
-    nadia_graphics_t *g = (nadia_graphics_t *) malloc(sizeof (nadia_graphics_t));
+    nadia_gctx_t *g = (nadia_gctx_t *) malloc(sizeof (nadia_gctx_t));
 
     if (!g)
     {
@@ -34,7 +34,7 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
 
     NADIA_PLATFORM.log(">> Nadia: Creating framebuffer.\n");
 
-    memset(g, 0, sizeof(nadia_graphics_t));
+    memset(g, 0, sizeof(nadia_gctx_t));
 
     if (set_gfx_mode(GFX_AUTODETECT, configure_get_display_w(configs), configure_get_display_h(configs), 0, 0) != 0)
     {
@@ -61,7 +61,7 @@ nadia_graphics_t *nadia_graphics_init(config_t *configs)
     return g;
 }
 
-void nadia_clear_display(nadia_graphics_t *ctx, unsigned int color)
+void nadia_clear_display(nadia_gctx_t *ctx, unsigned int color)
 {
     if (!ctx || !ctx->framebuffer.data) return;
     clear_to_color((BITMAP *)ctx->framebuffer.data, makecol(
@@ -71,14 +71,14 @@ void nadia_clear_display(nadia_graphics_t *ctx, unsigned int color)
     ));
 }
 
-void nadia_graphics_present(nadia_graphics_t *ctx)
+void nadia_graphics_present(nadia_gctx_t *ctx)
 {
     if (!ctx || !ctx->framebuffer.data) return;
     vsync();
     blit(ctx->framebuffer.data, ctx->renderer, 0, 0, 0, 0, ctx->framebuffer.width, ctx->framebuffer.height);
 }
 
-void nadia_graphics_quit(nadia_graphics_t *ctx)
+void nadia_graphics_quit(nadia_gctx_t *ctx)
 {
     if (!ctx) return;
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
